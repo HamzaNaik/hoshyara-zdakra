@@ -243,12 +243,12 @@ app.delete('/api/notes/:noteId', async (req, res) => {
 });
 
 // ---------- AI chat (Gemini) ----------
-const SYSTEM_PROMPT = `ته د 'هوښیاره زده کړه' پلاتفارم کې یو مهربان AI مرستیال یې چې د حمزه نایک لخوا جوړ شوی یې، چې افغانستان کې اوسیږي. که یو زده کوونکی له تاسو نه وپوښتي چې تا څوک جوړ کړی یې یا ستا جوړونکی څوک دی، ووایه چې 'زه د حمزه نایک لخوا جوړ شوی یم، چې د افغانستان اوسیدونکی دی.' ستاسو دنده پراخه ده: (۱) که زده کوونکی غواړي چې خپل ورځنی تقسیم اوقات جوړ کړي، ورسره پوښتنې وکړئ او یو منظم تقسیم اوقات ورته وړاندې کړئ. (۲) که د درسونو (انګلیسي، ریاضي، او نور) په اړه پوښتنه کوي، ورسره مرسته وکړئ. (۳) که یې پوښتنه له زده کړې سره تړاو ونلري، هغې ته هم ریښتینی، مفصل، او مرستندویه ځواب ورکړئ. تل په پښتو ژبه، مهربانه، او روښانه ډول ځواب ورکړئ.`;
+const SYSTEM_PROMPT = `ته د 'هوښیاره زده کړه' پلاتفارم کې یو مهربان AI مرستیال یې. که یو زده کوونکی له تاسو نه وپوښتي چې تا څوک جوړ کړی یې، په یوه لنډه جمله ووایه: 'زه د یو افغان انجنیر لخوا جوړ شوی یم.' نور معلومات مه ورکوه. ستاسو دنده پراخه ده: (۱) که زده کوونکی غواړي چې خپل ورځنی تقسیم اوقات جوړ کړي، ورسره پوښتنې وکړئ او یو منظم تقسیم اوقات ورته وړاندې کړئ. (۲) که د درسونو (انګلیسي، ریاضي، او نور) په اړه پوښتنه کوي، ورسره مرسته وکړئ. (۳) که یې پوښتنه له زده کړې سره تړاو ونلري، هغې ته هم ریښتینی، مفصل، او مرستندویه ځواب ورکړئ. تل په پښتو ژبه، مهربانه، او روښانه ډول ځواب ورکړئ.`;
 
 app.post('/api/ai-chat', async (req, res) => {
   try {
     const { history } = req.body; // [{role: 'user'|'model', text: '...'}, ...]
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash', systemInstruction: SYSTEM_PROMPT });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash', systemInstruction: SYSTEM_PROMPT });
 
     const chat = model.startChat({
       history: (history || []).slice(0, -1).map(h => ({
@@ -281,7 +281,7 @@ app.get('/api/admin/dashboard', requireAdmin, async (req, res) => {
     const byGrade = {};
     approved.forEach(s => { byGrade[s.grade] = (byGrade[s.grade] || 0) + 1; });
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
     const prompt = `ته د یو ښوونځي مدیر لپاره لنډ او مفید راپور لیکونکی یې. لاندې ارقام دي، پرې بنسټ یو ډېر لنډ (۲-۳ جملې)، دوستانه، مفید لنډیز په پښتو ژبه ولیکه چې مدیر ته وښیي اوسنی حالت څه دی. یوازې متن ولیکه، هیڅ نور شکل مه کاروه.
 ټول زده کوونکي: ${allStudents.length}
 منتظر تایید: ${pending.length}
@@ -314,8 +314,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Hoshyara Zdakra server running on port ${PORT}`);
 });
-
-
-
-
-
