@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>د مدیر ډشبورډ — هوښیاره زده کړه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c2321; --sand:#f4ecd8; --sand-2:#ece0c4;
+    --teal:#1f5952; --teal-deep:#123531;
+    --ochre:#c8862b; --ochre-light:#e2a94f; --rose:#b2543f;
+    --line: rgba(28,35,33,0.14); --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --ink:#f1ece0; --sand:#161b19; --sand-2:#1d2422; --line: rgba(241,236,224,0.14); }
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--sand); color:var(--ink); font-family:'Vazirmatn',sans-serif; line-height:1.9; }
+  .wrap{ max-width:720px; margin:0 auto; padding:20px; }
+
+  .login-box{
+    max-width:360px; margin:80px auto; background:var(--sand-2);
+    border:1.5px solid var(--line); border-radius:16px; padding:26px;
+  }
+  .login-box h2{ margin:0 0 16px; font-size:19px; }
+  .login-box input{
+    width:100%; font-family:inherit; font-size:15px; padding:12px 14px;
+    border-radius:9px; border:1.5px solid var(--line); background:var(--sand); color:var(--ink); margin-bottom:12px;
+  }
+  .login-box button{
+    width:100%; font-family:inherit; font-weight:700; font-size:15px;
+    background:var(--teal); color:#fff; border:none; border-radius:10px; padding:13px; cursor:pointer;
+  }
+  .login-error{ color:var(--rose); font-size:13px; margin-bottom:10px; display:none; }
+
+  header.top{ background:var(--teal-deep); color:var(--sand); padding:28px 0; }
+  header.top .wrap h1{ margin:0; font-size:22px; }
+  header.top .wrap p{ margin:6px 0 0; opacity:0.8; font-size:13.5px; }
+
+  .summary-card{
+    background: linear-gradient(135deg, var(--teal), var(--teal-deep));
+    color:#fff; border-radius: var(--radius); padding:20px; margin:20px 0;
+    font-size:15px; line-height:1.8;
+  }
+  .summary-card .label{ font-size:11.5px; opacity:0.75; margin-bottom:6px; font-weight:700; letter-spacing:0.5px; }
+
+  .stat-row{ display:flex; gap:10px; margin-bottom:20px; }
+  .stat{
+    flex:1; text-align:center; background:var(--sand-2); border:1px solid var(--line);
+    border-radius:12px; padding:14px 6px;
+  }
+  .stat b{ display:block; font-size:22px; color:var(--teal); }
+  .stat span{ font-size:12px; opacity:0.7; }
+
+  h2.section-title{ font-size:17px; margin:26px 0 12px; }
+
+  .student-card{
+    background:var(--sand-2); border:1.5px solid var(--line); border-radius:var(--radius);
+    padding:16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; gap:10px;
+  }
+  .student-card .info strong{ display:block; font-size:15px; }
+  .student-card .info span{ font-size:12.5px; opacity:0.7; }
+  .actions{ display:flex; gap:6px; }
+  .btn{ font-family:inherit; font-size:13px; font-weight:700; border:none; border-radius:8px; padding:9px 14px; cursor:pointer; }
+  .btn.approve{ background:var(--teal); color:#fff; }
+  .btn.reject{ background:transparent; color:var(--rose); border:1.5px solid var(--rose); }
+
+  .class-group{ margin-bottom:18px; }
+  .class-group h3{ font-size:14.5px; color:var(--ochre); margin:0 0 8px; }
+  .empty{ text-align:center; padding:24px; opacity:0.6; font-size:14px; }
+  .refresh-btn{
+    display:block; margin:20px auto 40px; background:none; border:1.5px solid var(--line);
+    color:var(--ink); font-family:inherit; font-size:13.5px; padding:9px 18px; border-radius:100px; cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div id="login-screen" class="login-box">
+  <h2>🔐 د مدیر ننوتل</h2>
+  <div class="login-error" id="login-error">پاسورډ سم نه دی</div>
+  <input type="password" id="admin-pass" placeholder="د مدیر پاسورډ">
+  <button onclick="login()">ننوتل</button>
+</div>
+
+<div id="dashboard" style="display:none;">
+  <header class="top">
+    <div class="wrap">
+      <h1>د مدیر ډشبورډ</h1>
+      <p>هوښیاره زده کړه — د زده کوونکو مدیریت</p>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="summary-card">
+      <div class="label">🤖 د AI لخوا لیکل شوی لنډیز</div>
+      <div id="ai-summary">...</div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><b id="stat-total">-</b><span>ټول زده کوونکي</span></div>
+      <div class="stat"><b id="stat-pending">-</b><span>منتظر تایید</span></div>
+      <div class="stat"><b id="stat-approved">-</b><span>تایید شوي</span></div>
+    </div>
+
+    <h2 class="section-title">⏳ منتظر تایید</h2>
+    <div id="pending-list"></div>
+
+    <h2 class="section-title">🏫 ټولګي</h2>
+    <div id="classes-list"></div>
+
+    <button class="refresh-btn" onclick="loadDashboard()">🔄 تازه کول</button>
+  </div>
+</div>
+
+<script>
+  let adminPassword = '';
+
+  function login(){
+    const pass = document.getElementById('admin-pass').value;
+    if(!pass){ return; }
+    adminPassword = pass;
+    sessionStorage.setItem('hz_admin_pass', pass);
+    loadDashboard();
+  }
+
+  async function loadDashboard(){
+    try{
+      const res = await fetch('/api/admin/dashboard', {
+        headers: { 'x-admin-password': adminPassword }
+      });
+      if(res.status === 401){
+        document.getElementById('login-error').style.display = 'block';
+        document.getElementById('login-screen').style.display = 'block';
+        document.getElementById('dashboard').style.display = 'none';
+        sessionStorage.removeItem('hz_admin_pass');
+        return;
+      }
+      const data = await res.json();
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+
+      document.getElementById('ai-summary').textContent = data.summary;
+      document.getElementById('stat-total').textContent = data.totals.all;
+      document.getElementById('stat-pending').textContent = data.totals.pending;
+      document.getElementById('stat-approved').textContent = data.totals.approved;
+
+      const pendingList = document.getElementById('pending-list');
+      if(data.pendingStudents.length === 0){
+        pendingList.innerHTML = '<div class="empty">اوس مهال هیڅوک منتظر نه دی 🎉</div>';
+      } else {
+        pendingList.innerHTML = data.pendingStudents.map(s => `
+          <div class="student-card">
+            <div class="info">
+              <strong>${escapeHtml(s.name)}</strong>
+              <span>د پلار نوم: ${escapeHtml(s.father_name)} · ${s.school_type === 'private' ? 'خصوصي' : 'دولتي'} · ټولګی: ${escapeHtml(s.grade)}</span>
+            </div>
+            <div class="actions">
+              <button class="btn approve" onclick="approveStudent('${s.id}')">تایید</button>
+              <button class="btn reject" onclick="rejectStudent('${s.id}')">رد</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      const classesList = document.getElementById('classes-list');
+      if(data.classes.length === 0){
+        classesList.innerHTML = '<div class="empty">لا تر اوسه هیڅ ټولګی جوړ نه دی</div>';
+      } else {
+        classesList.innerHTML = data.classes.map(c => {
+          const members = data.approvedStudents.filter(s => s.class_id === c.id);
+          return `
+            <div class="class-group">
+              <h3>ټولګی: ${escapeHtml(c.grade_label)} (${members.length} زده کوونکي)</h3>
+              ${members.map(m => `
+                <div class="student-card">
+                  <div class="info">
+                    <strong>${escapeHtml(m.name)}</strong>
+                    <span>د پلار نوم: ${escapeHtml(m.father_name)}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }).join('');
+      }
+    }catch(e){
+      console.error(e);
+      alert('د معلوماتو راوړلو کې ستونزه رامنځ ته شوه');
+    }
+  }
+
+  async function approveStudent(id){
+    await fetch('/api/admin/approve/' + id, { method: 'POST', headers: { 'x-admin-password': adminPassword } });
+    loadDashboard();
+  }
+  async function rejectStudent(id){
+    await fetch('/api/admin/reject/' + id, { method: 'POST', headers: { 'x-admin-password': adminPassword } });
+    loadDashboard();
+  }
+
+  function escapeHtml(s){
+    const d = document.createElement('div');
+    d.textContent = s || '';
+    return d.innerHTML;
+  }
+
+  // auto-login if password already saved this session
+  const saved = sessionStorage.getItem('hz_admin_pass');
+  if(saved){ adminPassword = saved; loadDashboard(); }
+
+  document.getElementById('admin-pass').addEventListener('keydown', e => {
+    if(e.key === 'Enter') login();
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هوښیاره زده کړه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c2321;
+    --sand:#f4ecd8;
+    --sand-2:#ece0c4;
+    --teal:#1f5952;
+    --teal-deep:#123531;
+    --ochre:#c8862b;
+    --ochre-light:#e2a94f;
+    --rose:#b2543f;
+    --line: rgba(28,35,33,0.14);
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#f1ece0;
+      --sand:#161b19;
+      --sand-2:#1d2422;
+      --line: rgba(241,236,224,0.14);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#f1ece0;
+    --sand:#161b19;
+    --sand-2:#1d2422;
+    --line: rgba(241,236,224,0.14);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--sand);
+    color:var(--ink);
+    font-family:'Vazirmatn', 'Segoe UI', sans-serif;
+    line-height:1.9;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+
+  /* HERO */
+  header.hero{
+    background: var(--teal-deep);
+    color: var(--sand);
+    padding: 56px 0 72px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";
+    position:absolute;
+    inset:auto -20% -60% -20%;
+    height:220px;
+    background: radial-gradient(ellipse at center, rgba(200,134,43,0.35), transparent 70%);
+    pointer-events:none;
+  }
+  .eyebrow-name{
+    font-size: 15px;
+    color: var(--ochre-light);
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  h1.title{
+    font-size: clamp(30px, 7vw, 44px);
+    font-weight:800;
+    margin:0 0 18px;
+    line-height:1.35;
+  }
+  .hero p{
+    font-size:17px;
+    color: rgba(244,236,216,0.85);
+    max-width: 46ch;
+    margin:0;
+  }
+  .hero-badge{
+    display:inline-flex;
+    gap:8px;
+    align-items:center;
+    background: rgba(244,236,216,0.08);
+    border: 1px solid rgba(244,236,216,0.25);
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 14px;
+    margin-top:26px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--ochre-light);}
+
+  /* NAV PILLS */
+  nav.pills{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding: 16px 20px;
+    background: var(--sand);
+    position:sticky;
+    top:0;
+    z-index: 20;
+    border-bottom: 1px solid var(--line);
+    scrollbar-width:none;
+  }
+  nav.pills::-webkit-scrollbar{display:none;}
+  nav.pills button{
+    flex:none;
+    font-family:inherit;
+    font-size:14.5px;
+    font-weight:600;
+    padding:9px 18px;
+    border-radius:100px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  nav.pills button.active{
+    background:var(--teal);
+    border-color:var(--teal);
+    color:#fff;
+  }
+
+  section{padding: 40px 0; display:none;}
+  section.active-page{display:block; animation: fadeInPage .22s ease;}
+  @keyframes fadeInPage{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  section h2{
+    font-size:23px;
+    font-weight:700;
+    margin: 0 0 6px;
+  }
+  section .lede{
+    color: color-mix(in srgb, var(--ink) 65%, transparent);
+    font-size:15px;
+    margin:0 0 26px;
+  }
+
+  /* SCHEDULE BUILDER */
+  .choice-row{display:flex; gap:12px; margin-bottom:22px; flex-wrap:wrap;}
+  .choice-card{
+    flex:1 1 220px;
+    border:1.5px solid var(--line);
+    border-radius: var(--radius);
+    padding:18px;
+    cursor:pointer;
+    background: var(--sand-2);
+    transition: border-color .15s, transform .15s;
+  }
+  .choice-card:hover{ border-color: var(--teal); }
+  .choice-card.selected{ border-color: var(--teal); box-shadow: 0 0 0 1px var(--teal) inset; }
+  .choice-card .icon{font-size:22px; margin-bottom:8px; display:block;}
+  .choice-card strong{display:block; font-size:15.5px; margin-bottom:4px;}
+  .choice-card span{font-size:13.5px; color: color-mix(in srgb, var(--ink) 60%, transparent);}
+
+  .builder-panel{
+    border:1.5px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px;
+    background: var(--sand-2);
+    display:none;
+  }
+  .builder-panel.visible{display:block;}
+
+  .row-entry{
+    display:grid;
+    grid-template-columns: 110px 1fr auto;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .row-entry input[type=time], .row-entry input[type=text]{
+    font-family:inherit;
+    font-size:14.5px;
+    padding:10px 12px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background: var(--sand);
+    color:var(--ink);
+    width:100%;
+  }
+  .row-entry input:focus{ outline:2px solid var(--teal); outline-offset:1px; }
+  .row-entry button.remove{
+    border:none;
+    background:transparent;
+    color: var(--rose);
+    font-size:19px;
+    cursor:pointer;
+    padding:4px 8px;
+  }
+  .add-row-btn{
+    font-family:inherit;
+    font-size:14px;
+    font-weight:600;
+    background:transparent;
+    border: 1.5px dashed var(--line);
+    color: var(--ink);
+    border-radius:9px;
+    padding:10px 14px;
+    cursor:pointer;
+    width:100%;
+    margin: 6px 0 20px;
+  }
+  .add-row-btn:hover{ border-color:var(--teal); color:var(--teal); }
+
+  .save-btn{
+    font-family:inherit;
+    font-size:15.5px;
+    font-weight:700;
+    background: var(--teal);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:13px 26px;
+    cursor:pointer;
+    width:100%;
+  }
+  .save-btn:hover{ background: var(--teal-deep); }
+
+  /* AI chat mock */
+  .chat-log{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .bubble{
+    max-width:80%;
+    padding:11px 15px;
+    border-radius:14px;
+    font-size:14.5px;
+  }
+  .bubble.ai{
+    background: var(--sand);
+    border:1px solid var(--line);
+    align-self:flex-start;
+    border-start-start-radius:4px;
+  }
+  .bubble.me{
+    background: var(--teal);
+    color:#fff;
+    align-self:flex-end;
+    border-start-end-radius:4px;
+  }
+  .chat-input-row{display:flex; gap:8px;}
+  .chat-input-row input{
+    flex:1;
+    font-family:inherit;
+    font-size:14.5px;
+    padding:11px 14px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background:var(--sand);
+    color:var(--ink);
+  }
+  .chat-input-row button{
+    font-family:inherit;
+    font-weight:700;
+    background:var(--ochre);
+    color:#fff;
+    border:none;
+    border-radius:9px;
+    padding:0 20px;
+    cursor:pointer;
+  }
+
+  /* view schedule list */
+  .sched-list{list-style:none; margin:0; padding:0;}
+  .sched-list li{
+    display:flex;
+    gap:16px;
+    align-items:baseline;
+    padding:13px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .sched-list li:last-child{border-bottom:none;}
+  .sched-time{
+    font-weight:700;
+    color:var(--teal);
+    min-width:64px;
+    font-variant-numeric: tabular-nums;
+  }
+  :root[data-theme="dark"] .sched-time, body:not([data-theme="light"]) .sched-time{}
+  @media (prefers-color-scheme:dark){ .sched-time{ color: var(--ochre-light); } }
+  :root[data-theme="dark"] .sched-time{ color: var(--ochre-light); }
+  .sched-activity{font-size:15px;}
+  .edit-link{
+    background:none;border:none;
+    color:var(--rose);
+    font-family:inherit;
+    font-size:13.5px;
+    cursor:pointer;
+    text-decoration:underline;
+    margin-top:16px;
+  }
+
+  /* feature gallery (coming soon) */
+  .gallery{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+  }
+  @media (max-width:520px){ .gallery{grid-template-columns:1fr;} }
+  .g-card{
+    border:1.5px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px;
+    background:var(--sand-2);
+  }
+  .g-card .icon{font-size:20px;}
+  .g-card strong{display:block; margin:8px 0 4px; font-size:15px;}
+  .g-card span{font-size:13px; color: color-mix(in srgb, var(--ink) 60%, transparent);}
+  .g-card .tag{
+    display:inline-block;
+    margin-top:10px;
+    font-size:11.5px;
+    font-weight:700;
+    color: var(--ochre);
+    border:1px solid var(--ochre);
+    border-radius:100px;
+    padding:2px 10px;
+  }
+  .progress-track{
+    margin-top:10px;
+    height:7px;
+    border-radius:100px;
+    background: var(--line);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background: var(--teal);
+    border-radius:100px;
+    transition: width .6s ease;
+  }
+  .progress-label{
+    font-size:12px;
+    font-weight:700;
+    color:var(--teal);
+    margin-top:6px;
+    display:block;
+  }
+  .g-card.clickable{ cursor:pointer; transition: transform .15s, border-color .15s; }
+  .g-card.clickable:hover{ border-color:var(--teal); transform: translateY(-2px); }
+  .tap-hint{
+    display:block;
+    margin-top:10px;
+    font-size:11.5px;
+    color: var(--ochre);
+    font-weight:600;
+  }
+
+  /* modal */
+  .modal-overlay{
+    position:fixed; inset:0;
+    background: rgba(18,20,19,0.6);
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    z-index:100;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-sheet{
+    background: var(--sand);
+    color:var(--ink);
+    width:100%;
+    max-width:760px;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px 30px;
+    max-height:85vh;
+    overflow-y:auto;
+    animation: slideUp .25s ease;
+  }
+  @keyframes slideUp{ from{transform:translateY(30px); opacity:0;} to{transform:translateY(0); opacity:1;} }
+  .modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+  }
+  .modal-head h3{ margin:0; font-size:19px; font-weight:700; }
+  .modal-close{
+    background:var(--sand-2);
+    border:1px solid var(--line);
+    border-radius:50%;
+    width:34px; height:34px;
+    font-size:16px;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .chart-wrap{
+    background:var(--sand-2);
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    padding:16px 12px;
+  }
+  .chart-legend{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    color: color-mix(in srgb, var(--ink) 55%, transparent);
+    margin-top:4px;
+  }
+  .modal-stats{
+    display:flex;
+    gap:10px;
+    margin-top:16px;
+  }
+  .stat-box{
+    flex:1;
+    text-align:center;
+    background:var(--sand-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px 6px;
+  }
+  .stat-box b{ display:block; font-size:20px; color:var(--teal); }
+  .stat-box span{ font-size:11.5px; color: color-mix(in srgb, var(--ink) 60%, transparent); }
+
+  /* registration modal */
+  .reg-overlay{
+    position:fixed; inset:0;
+    background: var(--teal-deep);
+    z-index:200;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .reg-overlay.hidden{ display:none; }
+  .reg-card{
+    background: var(--sand);
+    color:var(--ink);
+    width:100%;
+    max-width:420px;
+    border-radius:18px;
+    padding:28px 24px;
+  }
+  .reg-card h2{ margin:0 0 6px; font-size:20px; }
+  .reg-card p.reg-sub{ margin:0 0 20px; font-size:13.5px; color: color-mix(in srgb, var(--ink) 60%, transparent); }
+  .reg-field{ margin-bottom:14px; }
+  .reg-field label{ display:block; font-size:13.5px; font-weight:600; margin-bottom:6px; }
+  .reg-field input, .reg-field select{
+    width:100%;
+    font-family:inherit;
+    font-size:14.5px;
+    padding:11px 13px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background: var(--sand-2);
+    color:var(--ink);
+  }
+  .reg-toggle{ display:flex; gap:10px; }
+  .reg-toggle button{
+    flex:1;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:600;
+    padding:11px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background:var(--sand-2);
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .reg-toggle button.picked{ border-color:var(--teal); background: var(--teal); color:#fff; }
+  .reg-submit{
+    width:100%;
+    margin-top:6px;
+    font-family:inherit;
+    font-size:15.5px;
+    font-weight:700;
+    background: var(--ochre);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:13px;
+    cursor:pointer;
+  }
+  .reg-error{ color:var(--rose); font-size:12.5px; margin-top:-6px; margin-bottom:10px; display:none; }
+
+  /* real chat bubbles typing state */
+  .bubble.ai.thinking{ opacity:0.6; font-style:italic; }
+  .welcome-name{ color: var(--ochre-light); font-weight:700; }
+
+  /* notes */
+  .note-compose{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .note-compose textarea{
+    font-family:inherit;
+    font-size:14.5px;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1.5px solid var(--line);
+    background:var(--sand-2);
+    color:var(--ink);
+    resize:vertical;
+    min-height:70px;
+  }
+  .note-compose button{
+    align-self:flex-end;
+    font-family:inherit;
+    font-weight:700;
+    background:var(--teal);
+    color:#fff;
+    border:none;
+    border-radius:9px;
+    padding:10px 22px;
+    cursor:pointer;
+  }
+  .note-item{
+    border:1.5px solid var(--line);
+    border-radius: var(--radius);
+    padding:14px 16px;
+    background:var(--sand-2);
+    margin-bottom:10px;
+    position:relative;
+  }
+  .note-item .note-date{ font-size:11.5px; color: var(--ochre); font-weight:700; margin-bottom:6px; display:block; }
+  .note-item .note-text{ font-size:14.5px; white-space:pre-wrap; }
+  .note-item .note-delete{
+    position:absolute;
+    top:10px; left:10px;
+    background:none; border:none;
+    color:var(--rose);
+    cursor:pointer;
+    font-size:15px;
+  }
+  .notes-empty{ font-size:13.5px; color: color-mix(in srgb, var(--ink) 55%, transparent); text-align:center; padding:20px 0; }
+
+  .note-attach-row{ display:flex; gap:8px; }
+  .visually-hidden{
+    position:absolute;
+    width:1px; height:1px;
+    padding:0; margin:-1px;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
+  }
+  .attach-btn{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:600;
+    background:var(--sand-2);
+    border:1.5px solid var(--line);
+    color:var(--ink);
+    border-radius:9px;
+    padding:9px 14px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+  }
+  .attach-btn.recording{ border-color:var(--rose); color:var(--rose); }
+  #note-attachment-preview:not(:empty){
+    border:1.5px dashed var(--line);
+    border-radius:10px;
+    padding:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:13px;
+  }
+  #note-attachment-preview img{ max-width:60px; max-height:60px; border-radius:6px; }
+  #note-attachment-preview .remove-attach{
+    margin-right:auto;
+    background:none; border:none; color:var(--rose); cursor:pointer; font-size:15px;
+  }
+  .note-attachment{ margin-top:10px; }
+  .note-attachment img{ max-width:100%; border-radius:8px; display:block; }
+  .note-attachment audio{ width:100%; }
+  .note-attachment .pdf-chip{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--sand); border:1px solid var(--line); border-radius:8px;
+    padding:8px 12px; font-size:13px; text-decoration:none; color:var(--ink);
+  }
+
+  footer{
+    padding: 34px 0 60px;
+    text-align:center;
+    font-size:13px;
+    color: color-mix(in srgb, var(--ink) 55%, transparent);
+  }
+
+  .lang-note{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:14px;
+  }
+  .lang-pill{
+    font-family:inherit;
+    font-size:12.5px;
+    border:1px solid rgba(244,236,216,0.3);
+    background:transparent;
+    color:rgba(244,236,216,0.85);
+    padding:5px 13px;
+    border-radius:100px;
+    cursor:pointer;
+    transition: background .15s, color .15s;
+  }
+  .lang-pill.active{
+    background: var(--ochre-light);
+    border-color: var(--ochre-light);
+    color: var(--teal-deep);
+    font-weight:700;
+  }
+</style>
+</head>
+<body>
+
+<div class="reg-overlay" id="reg-overlay">
+  <div class="reg-card">
+    <h2 data-i18n="reg_title">ښه راغلاست 👋</h2>
+    <p class="reg-sub" data-i18n="reg_sub">مخکې له دې چې پیل کړو، لږ خپل ځان راوپیژنئ</p>
+
+    <div class="reg-field">
+      <label data-i18n="reg_name_label">نوم</label>
+      <input type="text" id="reg-name" data-i18n-ph="reg_name_ph" placeholder="ستاسو نوم">
+    </div>
+    <div class="reg-field">
+      <label data-i18n="reg_father_label">د پلار نوم</label>
+      <input type="text" id="reg-father" data-i18n-ph="reg_father_ph" placeholder="د پلار نوم">
+    </div>
+    <div class="reg-field">
+      <label data-i18n="reg_school_label">ښوونځی</label>
+      <div class="reg-toggle">
+        <button type="button" id="reg-school-private" onclick="pickSchool('private')" data-i18n="reg_private">خصوصي</button>
+        <button type="button" id="reg-school-public" onclick="pickSchool('public')" data-i18n="reg_public">دولتي</button>
+      </div>
+    </div>
+    <div class="reg-field">
+      <label data-i18n="reg_grade_label">ټولګی</label>
+      <input type="text" id="reg-grade" data-i18n-ph="reg_grade_ph" placeholder="لکه: نهم">
+    </div>
+    <div class="reg-error" id="reg-error" data-i18n="reg_error">مهرباني وکړئ ټول ځایونه ډک کړئ</div>
+    <button class="reg-submit" onclick="submitRegistration()" data-i18n="reg_submit">ثبت او پیل کول</button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow-name" data-i18n="brand_name">هوښیاره زده کړه</div>
+    <h1 class="title" data-i18n="hero_title">هغه وخت چې تنظیم نه لري، موږ درسره تنظیموو</h1>
+    <p data-i18n="hero_desc">د هغو زده کوونکو لپاره چې د ورځې لپاره ثابت پروګرام نه لري — خپل تقسیم اوقات جوړ کړئ، تعقیب یې کړئ، او هره ورځ یو ګام مخکې لاړ شئ.</p>
+    <div class="hero-badge"><span class="dot"></span> <span data-i18n="hero_badge">لومړنی نمونه — تقسیم اوقات فعال دی</span></div>
+    <p id="welcome-line" style="margin-top:14px; font-size:14.5px; display:none;"></p>
+    <div class="lang-note">
+      <button class="lang-pill active" data-lang="ps" onclick="setLang('ps')">پښتو</button>
+      <button class="lang-pill" data-lang="fa" onclick="setLang('fa')">دري</button>
+      <button class="lang-pill" data-lang="en" onclick="setLang('en')">English</button>
+      <button class="lang-pill" data-lang="ar" onclick="setLang('ar')">العربية</button>
+      <button class="lang-pill" data-lang="ur" onclick="setLang('ur')">اردو</button>
+    </div>
+  </div>
+</header>
+
+<nav class="pills">
+  <button class="pill-btn active" data-target="schedule" data-i18n="nav_schedule">تقسیم اوقات</button>
+  <button class="pill-btn" data-target="notes" data-i18n="nav_notes">یادداشت</button>
+  <button class="pill-btn" data-target="dashboard" data-i18n="nav_dashboard">ډشبورډ</button>
+  <button class="pill-btn" data-target="community" data-i18n="nav_community">سیالي او ازموینه</button>
+</nav>
+
+<main class="wrap">
+
+  <!-- SCHEDULE SECTION -->
+  <section id="schedule" class="active-page">
+    <h2 data-i18n="sch_title">خپل ورځنی تقسیم اوقات جوړ کړئ</h2>
+    <p class="lede" data-i18n="sch_lede">دا فقط یو وسیله ده — هیڅوک نه ارزوي چې تاسو مخکې تقسیم اوقات لرئ که نه.</p>
+
+    <div class="choice-row">
+      <div class="choice-card" id="choice-manual" onclick="selectMode('manual')">
+        <span class="icon">✍️</span>
+        <strong data-i18n="choice_manual_title">پخپله یې جوړ کړم</strong>
+        <span data-i18n="choice_manual_desc">هر وخت او کار پخپله ولیکئ</span>
+      </div>
+      <div class="choice-card" id="choice-ai" onclick="selectMode('ai')">
+        <span class="icon">🤖</span>
+        <strong data-i18n="choice_ai_title">د AI په مرسته جوړ کړم</strong>
+        <span data-i18n="choice_ai_desc">خبرې وکړئ، AI به وړاندیز درکړي</span>
+      </div>
+    </div>
+
+    <!-- Manual builder -->
+    <div class="builder-panel" id="panel-manual">
+      <div id="rows-container">
+        <div class="row-entry">
+          <input type="time" value="07:00">
+          <input type="text" placeholder="لکه: مکتب ته ځم">
+          <button class="remove" onclick="this.closest('.row-entry').remove()">✕</button>
+        </div>
+      </div>
+      <button class="add-row-btn" onclick="addRow()" data-i18n="add_row_btn">+ یو وخت نور اضافه کړئ</button>
+      <button class="save-btn" onclick="saveManual()" data-i18n="save_btn">تقسیم اوقات کیږدئ (Save)</button>
+    </div>
+
+    <!-- AI builder mock -->
+    <div class="builder-panel" id="panel-ai">
+      <div class="chat-log" id="chat-log">
+        <div class="bubble ai" data-i18n="ai_first_msg">سلام! راځئ ستاسو د ورځې تقسیم اوقات جوړ کړو. تاسو سهار کومه ساعت راویښیږئ؟</div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" data-i18n-ph="chat_placeholder" placeholder="دلته ولیکئ...">
+        <button id="chat-send-btn" onclick="aiRespond()" data-i18n="send_btn">لیږل</button>
+      </div>
+    </div>
+
+    <!-- View mode -->
+    <div class="builder-panel" id="panel-view">
+      <ul class="sched-list" id="sched-list"></ul>
+      <button class="edit-link" onclick="backToEdit()" data-i18n="edit_link">✎ بیا سمون ورکړئ</button>
+    </div>
+  </section>
+
+  <!-- NOTES SECTION -->
+  <section id="notes">
+    <h2 data-i18n="notes_title">یادداشت کتاب</h2>
+    <p class="lede" data-i18n="notes_lede">لکه ستاسو د موبایل نوټ اپ — دلته لیکئ چې کوم درس مو ولوستل، څنګه تشریح شو، او کورنۍ دنده څه وه.</p>
+
+    <div class="note-compose">
+      <textarea id="note-input" data-i18n-ph="note_placeholder" placeholder="نن مو څه زده کړل؟ ولیکئ..."></textarea>
+      <div class="note-attach-row">
+        <button type="button" class="attach-btn" onclick="document.getElementById('note-file-input').click()">📎 <span data-i18n="attach_file">فایل/انځور</span></button>
+        <input type="file" id="note-file-input" accept="image/*,.pdf" class="visually-hidden" onchange="handleFilePick(event)">
+        <button type="button" class="attach-btn" id="voice-btn" onclick="toggleVoiceRecording()">🎙️ <span id="voice-btn-label" data-i18n="attach_voice">غږ ثبت کړئ</span></button>
+      </div>
+      <div id="note-attachment-preview"></div>
+      <button onclick="addNote()" data-i18n="note_add_btn">+ یادداشت اضافه کړئ</button>
+    </div>
+
+    <div id="notes-list"></div>
+  </section>
+
+  <!-- DASHBOARD SECTION -->
+  <section id="dashboard">
+    <h2 data-i18n="dash_title">د پرمختګ ډشبورډ</h2>
+    <p class="lede" data-i18n="dash_lede">ستاسو د زده کړې بشپړ انځور — یوه کتنه، ټول معلومات.</p>
+    <div class="gallery">
+      <div class="g-card clickable" onclick="openDashboardDetail()">
+        <span class="icon">📊</span>
+        <strong data-i18n="dash_1_title">د تقسیم اوقات تعقیب</strong>
+        <span data-i18n="dash_1_desc">څو ورځې مو خپل پلان بشپړ تعقیب کړی</span>
+        <div class="progress-track"><div class="progress-fill" id="dash-progress-fill" style="width:0%"></div></div>
+        <span class="progress-label" id="dash-progress-label" data-i18n="dash_progress_default">لا تر اوسه هیڅ ثبت شوي نه دي</span>
+        <span class="tap-hint" data-i18n="tap_hint">👆 د بشپړ ګراف لپاره کلیک وکړئ</span>
+      </div>
+      <div class="g-card">
+        <span class="icon">🏅</span>
+        <strong data-i18n="dash_2_title">بیج او سرتیفیکیټ</strong>
+        <span data-i18n="dash_2_desc">د دوامدارې زده کړې لپاره ډیجیټل ثواب</span>
+        <div id="badge-status" style="margin-top:10px; font-size:13px; font-weight:600;"></div>
+      </div>
+      <div class="g-card">
+        <span class="icon">📴</span>
+        <strong data-i18n="dash_3_title">آفلاین لاسرسی</strong>
+        <span data-i18n="dash_3_desc">پرته له انټرنیټ هم خپل پلان وګورئ</span>
+      </div>
+      <div class="g-card">
+        <span class="icon">🧘</span>
+        <strong data-i18n="dash_4_title">د آرام یادونه</strong>
+        <span data-i18n="dash_4_desc">د اوږدې زده کړې ترمنځ لنډ آرام</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMUNITY -->
+  <section id="community">
+    <h2 data-i18n="comm_title">سیالي، ازموینې او خبرې کول</h2>
+    <p class="lede" data-i18n="comm_lede">له نورو زده کوونکو سره وصل شئ او خپل ځان وازمایاست.</p>
+    <div class="gallery">
+      <div class="g-card">
+        <span class="icon">🏆</span>
+        <strong data-i18n="comm_1_title">د زده کوونکو لیست</strong>
+        <span data-i18n="comm_1_desc">غوره تعقیب کوونکي دلته ښکاره کیږي</span>
+      </div>
+      <div class="g-card">
+        <span class="icon">📝</span>
+        <strong data-i18n="comm_2_title">ازموینې</strong>
+        <span data-i18n="comm_2_desc">هره اونۍ لنډې ازموینې</span>
+      </div>
+      <div class="g-card">
+        <span class="icon">💬</span>
+        <strong data-i18n="comm_3_title">د زده کوونکو خبرې (Forum)</strong>
+        <span data-i18n="comm_3_desc">پوښتنې وکړئ، له نورو زده کوونکو سره خبرې وکړئ</span>
+      </div>
+      <div class="g-card">
+        <span class="icon">🔔</span>
+        <strong data-i18n="comm_4_title">لنډ زنګ یادونه</strong>
+        <span data-i18n="comm_4_desc">هر ټاکل شوی وخت ته لنډ زنګ</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="modal-overlay" id="chart-modal">
+  <div class="modal-sheet">
+    <div class="modal-head">
+      <h3 data-i18n="chart_modal_title">ستاسو د اونۍ پرمختګ</h3>
+      <button class="modal-close" onclick="closeDashboardDetail()">✕</button>
+    </div>
+    <div class="chart-wrap">
+      <svg id="progress-chart" viewBox="0 0 320 140" style="width:100%; height:auto; overflow:visible;"></svg>
+      <div class="chart-legend">
+        <span id="chart-day-first">شنبه</span>
+        <span id="chart-day-last">جمعه</span>
+      </div>
+      <div class="chart-legend" style="margin-top:8px; opacity:0.75;">
+        <span data-i18n="chart_disclaimer" style="width:100%; text-align:center;">دا یوازې د بیلګې ارقام دي — ریښتیني اونیز ارقام یوازې د اصلي سایټ سره (له څو ورځو کارونې وروسته) ښکاره کیږي</span>
+      </div>
+    </div>
+    <div class="modal-stats">
+      <div class="stat-box"><b id="stat-avg">—</b><span data-i18n="stat_avg">اوسط بشپړتیا</span></div>
+      <div class="stat-box"><b id="stat-best">—</b><span data-i18n="stat_best">غوره ورځ</span></div>
+      <div class="stat-box"><b id="stat-streak">—</b><span data-i18n="stat_streak">پرله‌پسې ورځې</span></div>
+    </div>
+  </div>
+</div>
+
+<footer data-i18n="footer_text">هوښیاره زده کړه — لومړنی نمونه</footer>
+
+<script>
+  // nav = page switch (not scroll)
+  const pills = document.querySelectorAll('.pill-btn');
+  const pages = document.querySelectorAll('main > section');
+  pills.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      pills.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      pages.forEach(p=>p.classList.remove('active-page'));
+      document.getElementById(btn.dataset.target).classList.add('active-page');
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+
+  function selectMode(mode){
+    document.getElementById('choice-manual').classList.toggle('selected', mode==='manual');
+    document.getElementById('choice-ai').classList.toggle('selected', mode==='ai');
+    document.getElementById('panel-manual').classList.toggle('visible', mode==='manual');
+    document.getElementById('panel-ai').classList.toggle('visible', mode==='ai');
+    document.getElementById('panel-view').classList.remove('visible');
+  }
+
+  function addRow(){
+    const container = document.getElementById('rows-container');
+    const div = document.createElement('div');
+    div.className = 'row-entry';
+    div.innerHTML = `
+      <input type="time" value="12:00">
+      <input type="text" placeholder="لکه: کورنۍ دنده">
+      <button class="remove" onclick="this.closest('.row-entry').remove()">✕</button>
+    `;
+    container.appendChild(div);
+  }
+
+  function saveManual(){
+    const rows = document.querySelectorAll('#rows-container .row-entry');
+    const items = [];
+    rows.forEach(r=>{
+      const time = r.querySelector('input[type=time]').value;
+      const text = r.querySelector('input[type=text]').value.trim();
+      if(time && text) items.push({time, text});
+    });
+    if(items.length===0){ alert('لومړی لږ تر لږه یو وخت او کار ولیکئ'); return; }
+    items.sort((a,b)=> a.time.localeCompare(b.time));
+    renderSchedule(items);
+    updateDashboard(items);
+    updateBadges();
+    const studentId = localStorage.getItem('hz_student_id');
+    if(studentId){
+      fetch('/api/schedule/' + studentId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items })
+      }).catch(()=>{});
+    }
+    try{ localStorage.setItem('hz_schedule', JSON.stringify(items)); }catch(e){}
+    document.getElementById('panel-manual').classList.remove('visible');
+    document.getElementById('panel-view').classList.add('visible');
+  }
+
+  function renderSchedule(items){
+    const list = document.getElementById('sched-list');
+    list.innerHTML = '';
+    items.forEach(it=>{
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="sched-time">${to12(it.time)}</span><span class="sched-activity">${escapeHtml(it.text)}</span>`;
+      list.appendChild(li);
+    });
+  }
+
+  function to12(t){
+    const [h,m] = t.split(':').map(Number);
+    const suffix = h>=12 ? 'ماخوستن' : 'سهار';
+    let hh = h%12; if(hh===0) hh=12;
+    return `${hh}:${String(m).padStart(2,'0')} ${suffix}`;
+  }
+
+  function escapeHtml(s){
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function backToEdit(){
+    document.getElementById('panel-view').classList.remove('visible');
+    document.getElementById('panel-manual').classList.add('visible');
+    document.getElementById('choice-manual').classList.add('selected');
+  }
+
+  // ---- Notes ----
+  let pendingAttachment = null; // {type:'image'|'pdf'|'audio', dataUrl, name}
+  let mediaRecorder = null;
+  let recordedChunks = [];
+
+  function loadNotes(){
+    try{ return JSON.parse(localStorage.getItem('hz_notes') || '[]'); }catch(e){ return []; }
+  }
+  function saveNotesCache(notes){
+    try{ localStorage.setItem('hz_notes', JSON.stringify(notes)); }catch(e){}
+  }
+  function fetchNotesFromServer(){
+    const studentId = localStorage.getItem('hz_student_id');
+    if(!studentId) return renderNotesFromCache();
+    fetch('/api/notes/' + studentId)
+      .then(r => r.json())
+      .then(({ notes }) => {
+        const mapped = (notes || []).map(n => ({
+          id: n.id, text: n.text, date: new Date(n.created_at).toLocaleDateString(),
+          attachment: n.attachment_type ? { type: n.attachment_type, dataUrl: n.attachment_url } : null
+        }));
+        saveNotesCache(mapped);
+        renderNotesList(mapped);
+      })
+      .catch(() => renderNotesFromCache());
+  }
+  function renderNotesFromCache(){ renderNotesList(loadNotes()); }
+
+  function renderNotes(){ fetchNotesFromServer(); }
+
+  function renderNotesList(notes){
+    const list = document.getElementById('notes-list');
+    if(!list) return;
+    if(notes.length === 0){
+      const dict = i18n[currentLang] || i18n.ps;
+      list.innerHTML = `<div class="notes-empty">${dict.notes_empty || 'لا تر اوسه هیڅ یادداشت نشته'}</div>`;
+      return;
+    }
+    list.innerHTML = notes.slice().reverse().map(n => {
+      let attachHtml = '';
+      if(n.attachment){
+        if(n.attachment.type === 'image'){
+          attachHtml = `<div class="note-attachment"><img src="${n.attachment.dataUrl}" alt=""></div>`;
+        } else if(n.attachment.type === 'pdf'){
+          attachHtml = `<div class="note-attachment"><a class="pdf-chip" href="${n.attachment.dataUrl}" download="${escapeHtml(n.attachment.name||'file.pdf')}">📄 ${escapeHtml(n.attachment.name||'PDF')}</a></div>`;
+        } else if(n.attachment.type === 'audio'){
+          attachHtml = `<div class="note-attachment"><audio controls src="${n.attachment.dataUrl}"></audio></div>`;
+        }
+      }
+      return `
+      <div class="note-item">
+        <button class="note-delete" onclick="deleteNote('${n.id}')">✕</button>
+        <span class="note-date">${n.date}</span>
+        ${n.text ? `<div class="note-text">${escapeHtml(n.text)}</div>` : ''}
+        ${attachHtml}
+      </div>`;
+    }).join('');
+  }
+
+  function addNote(){
+    const input = document.getElementById('note-input');
+    const text = input.value.trim();
+    if(!text && !pendingAttachment) return;
+    const studentId = localStorage.getItem('hz_student_id');
+    const payload = {
+      text,
+      attachment_type: pendingAttachment ? pendingAttachment.type : null,
+      attachment_url: pendingAttachment ? pendingAttachment.dataUrl : null
+    };
+    if(studentId){
+      fetch('/api/notes/' + studentId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => { fetchNotesFromServer(); updateBadges(); })
+      .catch(() => {
+        const notes = loadNotes();
+        notes.push({ id: Date.now(), text, date: new Date().toLocaleDateString(), attachment: pendingAttachment });
+        saveNotesCache(notes);
+        renderNotesFromCache();
+      });
+    }
+    input.value = '';
+    clearAttachmentPreview();
+  }
+
+  function deleteNote(id){
+    fetch('/api/notes/' + id, { method: 'DELETE' })
+      .then(() => fetchNotesFromServer())
+      .catch(() => {
+        const notes = loadNotes().filter(n => String(n.id) !== String(id));
+        saveNotesCache(notes);
+        renderNotesFromCache();
+      });
+  }
+
+  function handleFilePick(evt){
+    const file = evt.target.files[0];
+    if(!file) return;
+    if(file.size > 3 * 1024 * 1024){
+      alert((i18n[currentLang]||i18n.ps).attach_too_big || 'دا فایل ډېر لوی دی (تر ۳ MB کم فایل وکاروئ).');
+      evt.target.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const type = file.type === 'application/pdf' ? 'pdf' : 'image';
+      pendingAttachment = { type, dataUrl: reader.result, name: file.name };
+      showAttachmentPreview();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function showAttachmentPreview(){
+    const box = document.getElementById('note-attachment-preview');
+    if(!pendingAttachment){ box.innerHTML = ''; return; }
+    let inner = '';
+    if(pendingAttachment.type === 'image') inner = `<img src="${pendingAttachment.dataUrl}">`;
+    else if(pendingAttachment.type === 'pdf') inner = `📄 ${escapeHtml(pendingAttachment.name)}`;
+    else if(pendingAttachment.type === 'audio') inner = `<audio controls src="${pendingAttachment.dataUrl}" style="max-width:180px;"></audio>`;
+    box.innerHTML = `${inner}<button class="remove-attach" onclick="clearAttachmentPreview()">✕</button>`;
+  }
+  function clearAttachmentPreview(){
+    pendingAttachment = null;
+    document.getElementById('note-attachment-preview').innerHTML = '';
+    document.getElementById('note-file-input').value = '';
+  }
+
+  async function toggleVoiceRecording(){
+    const btn = document.getElementById('voice-btn');
+    const label = document.getElementById('voice-btn-label');
+    const dict = i18n[currentLang] || i18n.ps;
+
+    if(mediaRecorder && mediaRecorder.state === 'recording'){
+      mediaRecorder.stop();
+      return;
+    }
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e => { if(e.data.size > 0) recordedChunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+        stream.getTracks().forEach(t => t.stop());
+        btn.classList.remove('recording');
+        label.textContent = dict.attach_voice || 'غږ ثبت کړئ';
+        const reader = new FileReader();
+        reader.onload = () => {
+          pendingAttachment = { type:'audio', dataUrl: reader.result, name:'voice.webm' };
+          showAttachmentPreview();
+        };
+        reader.readAsDataURL(blob);
+      };
+      mediaRecorder.start();
+      btn.classList.add('recording');
+      label.textContent = dict.attach_recording || '● ثبتیږي... (بند کولو لپاره کلیک وکړئ)';
+    }catch(e){
+      alert(dict.mic_denied || 'د مایکروفون اجازه ونه ورکړل شوه.');
+    }
+  }
+
+  function updateBadges(){
+    const el = document.getElementById('badge-status');
+    if(!el) return;
+    const dict = i18n[currentLang] || i18n.ps;
+    const notes = loadNotes();
+    let schedule = [];
+    try{ schedule = JSON.parse(localStorage.getItem('hz_schedule') || '[]'); }catch(e){}
+    const earned = [];
+    if(schedule.length > 0) earned.push(dict.badge_schedule || '📅 لومړی تقسیم اوقات');
+    if(notes.length >= 3) earned.push(dict.badge_notes || '🗒️ فعال یادداشت لیکونکی');
+    el.textContent = earned.length ? earned.join(' · ') : (dict.badge_none || 'لا تر اوسه هیڅ بیج نشته — کار پیل کړئ!');
+  }
+
+  // ---- Registration ----
+  let pickedSchool = null;
+  function pickSchool(type){
+    pickedSchool = type;
+    document.getElementById('reg-school-private').classList.toggle('picked', type==='private');
+    document.getElementById('reg-school-public').classList.toggle('picked', type==='public');
+  }
+  function submitRegistration(){
+    const name = document.getElementById('reg-name').value.trim();
+    const father = document.getElementById('reg-father').value.trim();
+    const grade = document.getElementById('reg-grade').value.trim();
+    const err = document.getElementById('reg-error');
+    if(!name || !father || !grade || !pickedSchool){
+      err.style.display = 'block';
+      return;
+    }
+    err.style.display = 'none';
+    fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, father_name: father, school_type: pickedSchool, grade })
+    })
+    .then(r => r.json())
+    .then(({ student }) => {
+      if(!student) throw new Error('no student returned');
+      localStorage.setItem('hz_student_id', student.id);
+      localStorage.setItem('hz_profile', JSON.stringify(student));
+      document.getElementById('reg-overlay').classList.add('hidden');
+      showWelcome(student);
+    })
+    .catch(() => {
+      err.textContent = 'اړیکه ونشوه — بیا هڅه وکړئ';
+      err.style.display = 'block';
+    });
+  }
+  function showWelcome(profile){
+    const line = document.getElementById('welcome-line');
+    if(!line) return;
+    const dict = i18n[currentLang] || i18n.ps;
+    const template = dict.welcome_line || 'ښه راغلې، {name}!';
+    line.innerHTML = template.replace('{name}', `<span class="welcome-name">${escapeHtml(profile.name)}</span>`);
+    line.style.display = 'block';
+  }
+  function checkRegistration(){
+    const id = localStorage.getItem('hz_student_id');
+    if(!id) return;
+    fetch('/api/students/' + id)
+      .then(r => r.json())
+      .then(({ student }) => {
+        if(student){
+          localStorage.setItem('hz_profile', JSON.stringify(student));
+          document.getElementById('reg-overlay').classList.add('hidden');
+          showWelcome(student);
+        }
+      })
+      .catch(() => {
+        // offline or server unreachable — fall back to cached profile so the page still works
+        try{
+          const saved = localStorage.getItem('hz_profile');
+          if(saved){
+            document.getElementById('reg-overlay').classList.add('hidden');
+            showWelcome(JSON.parse(saved));
+          }
+        }catch(e){}
+      });
+  }
+
+  let currentLang = 'ps';
+  function updateDashboard(items){
+    const fill = document.getElementById('dash-progress-fill');
+    const label = document.getElementById('dash-progress-label');
+    if(!fill || !label) return;
+    const target = 6;
+    const pct = Math.min(100, Math.round((items.length/target)*100));
+    fill.style.width = pct + '%';
+    const dict = i18n[currentLang] || i18n.ps;
+    const template = dict.dash_progress_filled || '{n} items saved';
+    label.textContent = template.replace('{n}', items.length);
+  }
+
+  function openDashboardDetail(){
+    document.getElementById('chart-modal').classList.add('open');
+    drawChart();
+  }
+  function closeDashboardDetail(){
+    document.getElementById('chart-modal').classList.remove('open');
+  }
+
+  function drawChart(){
+    // Mock weekly completion data (%), like a usage graph: higher = more schedule followed that day
+    const data = [40, 65, 55, 80, 70, 95, 60];
+    const svg = document.getElementById('progress-chart');
+    const w = 320, h = 140, pad = 14;
+    const stepX = (w - pad*2) / (data.length - 1);
+    const maxY = 100;
+    const points = data.map((v,i)=>{
+      const x = pad + i*stepX;
+      const y = h - pad - (v/maxY)*(h - pad*2);
+      return [x,y];
+    });
+    const pathD = points.map((p,i)=> (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+    const areaD = pathD + ` L${points[points.length-1][0].toFixed(1)},${h-pad} L${points[0][0].toFixed(1)},${h-pad} Z`;
+
+    const teal = getComputedStyle(document.documentElement).getPropertyValue('--teal').trim() || '#1f5952';
+    const ochre = getComputedStyle(document.documentElement).getPropertyValue('--ochre-light').trim() || '#e2a94f';
+
+    let gridLines = '';
+    for(let g=0; g<=2; g++){
+      const y = pad + g*(h-pad*2)/2;
+      gridLines += `<line x1="${pad}" y1="${y.toFixed(1)}" x2="${w-pad}" y2="${y.toFixed(1)}" stroke="${teal}" stroke-opacity="0.12" stroke-width="1"/>`;
+    }
+
+    let dots = points.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.4" fill="${ochre}" stroke="${teal}" stroke-width="1.5"/>`).join('');
+
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${teal}" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="${teal}" stop-opacity="0.02"/>
+        </linearGradient>
+      </defs>
+      ${gridLines}
+      <path d="${areaD}" fill="url(#areaGrad)" stroke="none"/>
+      <path d="${pathD}" fill="none" stroke="${teal}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      ${dots}
+    `;
+
+    const avg = Math.round(data.reduce((a,b)=>a+b,0)/data.length);
+    const best = Math.max(...data);
+    document.getElementById('stat-avg').textContent = avg + '%';
+    document.getElementById('stat-best').textContent = best + '%';
+    document.getElementById('stat-streak').textContent = '3';
+  }
+
+  // Restore saved schedule on load
+  const savedStudentId = localStorage.getItem('hz_student_id');
+  if(savedStudentId){
+    fetch('/api/schedule/' + savedStudentId)
+      .then(r => r.json())
+      .then(({ schedule }) => {
+        if(schedule && schedule.items && schedule.items.length){
+          renderSchedule(schedule.items);
+          updateDashboard(schedule.items);
+          document.getElementById('panel-view').classList.add('visible');
+          document.getElementById('choice-manual').classList.add('selected');
+          try{ localStorage.setItem('hz_schedule', JSON.stringify(schedule.items)); }catch(e){}
+        }
+      })
+      .catch(() => {
+        try{
+          const saved = localStorage.getItem('hz_schedule');
+          if(saved){
+            const items = JSON.parse(saved);
+            if(items && items.length){
+              renderSchedule(items);
+              updateDashboard(items);
+              document.getElementById('panel-view').classList.add('visible');
+              document.getElementById('choice-manual').classList.add('selected');
+            }
+          }
+        }catch(e){}
+      });
+  }
+  renderNotes();
+  checkRegistration();
+  updateBadges();
+
+  // Real AI chat via our own server (Gemini)
+  let aiTurns = []; // {role: 'user'|'assistant', text: '...'}
+
+  async function aiRespond(){
+    const input = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('chat-send-btn');
+    const text = input.value.trim();
+    if(!text) return;
+    const log = document.getElementById('chat-log');
+
+    const me = document.createElement('div');
+    me.className = 'bubble me';
+    me.textContent = text;
+    log.appendChild(me);
+    input.value = '';
+    input.disabled = true;
+    if(sendBtn) sendBtn.disabled = true;
+    log.scrollTop = log.scrollHeight;
+
+    const thinking = document.createElement('div');
+    thinking.className = 'bubble ai thinking';
+    thinking.textContent = '...';
+    log.appendChild(thinking);
+    log.scrollTop = log.scrollHeight;
+
+    aiTurns.push({ role: 'user', text });
+
+    try{
+      const res = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ history: aiTurns })
+      });
+      const data = await res.json();
+      if(!data.reply) throw new Error('no reply');
+      thinking.classList.remove('thinking');
+      thinking.textContent = data.reply;
+      aiTurns.push({ role: 'assistant', text: data.reply });
+    }catch(e){
+      thinking.classList.remove('thinking');
+      thinking.textContent = 'اړیکه له سرور سره ونشوه — بیا هڅه وکړئ.';
+    }
+    input.disabled = false;
+    if(sendBtn) sendBtn.disabled = false;
+    log.scrollTop = log.scrollHeight;
+  }
+  document.getElementById('chat-input').addEventListener('keydown', e=>{
+    if(e.key==='Enter') aiRespond();
+  });
+
+  // ---- Language switching ----
+  const i18n = {
+    ps: {
+      brand_name:"هوښیاره زده کړه",
+      hero_title:"هغه وخت چې تنظیم نه لري، موږ درسره تنظیموو",
+      hero_desc:"د هغو زده کوونکو لپاره چې د ورځې لپاره ثابت پروګرام نه لري — خپل تقسیم اوقات جوړ کړئ، تعقیب یې کړئ، او هره ورځ یو ګام مخکې لاړ شئ.",
+      hero_badge:"لومړنی نمونه — تقسیم اوقات فعال دی",
+      nav_schedule:"تقسیم اوقات", nav_notes:"یادداشت", nav_dashboard:"ډشبورډ", nav_community:"سیالي او ازموینه",
+      sch_title:"خپل ورځنی تقسیم اوقات جوړ کړئ",
+      sch_lede:"دا فقط یو وسیله ده — هیڅوک نه ارزوي چې تاسو مخکې تقسیم اوقات لرئ که نه.",
+      choice_manual_title:"پخپله یې جوړ کړم", choice_manual_desc:"هر وخت او کار پخپله ولیکئ",
+      choice_ai_title:"د AI په مرسته جوړ کړم", choice_ai_desc:"خبرې وکړئ، AI به وړاندیز درکړي",
+      add_row_btn:"+ یو وخت نور اضافه کړئ", save_btn:"تقسیم اوقات کیږدئ (Save)",
+      ai_first_msg:"سلام! راځئ ستاسو د ورځې تقسیم اوقات جوړ کړو. تاسو سهار کومه ساعت راویښیږئ؟",
+      chat_placeholder:"دلته ولیکئ...", send_btn:"لیږل",
+      edit_link:"✎ بیا سمون ورکړئ",
+      notes_title:"یادداشت کتاب",
+      notes_lede:"لکه ستاسو د موبایل نوټ اپ — دلته لیکئ چې کوم درس مو ولوستل، څنګه تشریح شو، او کورنۍ دنده څه وه.",
+      notes_example_title:"د بیلګې په توګه", notes_example_text:'"نن مو Grammar کې There is/are زده کړل. کورنۍ دنده: پنځه جملې ولیکئ."',
+      tag_coming:"په اصلي بڼه کې راروان دی",
+      dash_title:"د پرمختګ ډشبورډ", dash_lede:"ستاسو د زده کړې بشپړ انځور — یوه کتنه، ټول معلومات.",
+      dash_1_title:"د تقسیم اوقات تعقیب", dash_1_desc:"څو ورځې مو خپل پلان بشپړ تعقیب کړی",
+      dash_progress_default:"لا تر اوسه هیڅ ثبت شوي نه دي",
+      dash_progress_filled:"{n} ځایونه ثبت شوي",
+      tap_hint:"👆 د بشپړ ګراف لپاره کلیک وکړئ",
+      chart_modal_title:"ستاسو د اونۍ پرمختګ",
+      stat_avg:"اوسط بشپړتیا", stat_best:"غوره ورځ", stat_streak:"پرله‌پسې ورځې",
+      reg_title:"ښه راغلاست 👋", reg_sub:"مخکې له دې چې پیل کړو، لږ خپل ځان راوپیژنئ",
+      reg_name_label:"نوم", reg_name_ph:"ستاسو نوم",
+      reg_father_label:"د پلار نوم", reg_father_ph:"د پلار نوم",
+      reg_school_label:"ښوونځی", reg_private:"خصوصي", reg_public:"دولتي",
+      reg_grade_label:"ټولګی", reg_grade_ph:"لکه: نهم",
+      reg_error:"مهرباني وکړئ ټول ځایونه ډک کړئ", reg_submit:"ثبت او پیل کول",
+      welcome_line:"ښه راغلې، {name}!",
+      note_placeholder:"نن مو څه زده کړل؟ ولیکئ...", note_add_btn:"+ یادداشت اضافه کړئ",
+      notes_empty:"لا تر اوسه هیڅ یادداشت نشته",
+      ai_timeout:"دا برخه اوس مهال دلته کار نه کوي — دا یوازې د لنډې ازموینې محدودیت دی، اصلي سایټ کې به سمه کار وکړي.",
+      attach_file:"فایل/انځور", attach_voice:"غږ ثبت کړئ", attach_recording:"● ثبتیږي... (بند کولو لپاره کلیک وکړئ)",
+      attach_too_big:"دا فایل ډېر لوی دی (تر ۳ MB کم فایل وکاروئ).", mic_denied:"د مایکروفون اجازه ونه ورکړل شوه.",
+      badge_schedule:"📅 لومړی تقسیم اوقات", badge_notes:"🗒️ فعال یادداشت لیکونکی", badge_none:"لا تر اوسه هیڅ بیج نشته — کار پیل کړئ!",
+      chart_disclaimer:"دا یوازې د بیلګې ارقام دي — ریښتیني اونیز ارقام یوازې د اصلي سایټ سره ښکاره کیږي",
+      dash_2_title:"بیج او سرتیفیکیټ", dash_2_desc:"د دوامدارې زده کړې لپاره ډیجیټل ثواب",
+      dash_3_title:"آفلاین لاسرسی", dash_3_desc:"پرته له انټرنیټ هم خپل پلان وګورئ",
+      dash_4_title:"د آرام یادونه", dash_4_desc:"د اوږدې زده کړې ترمنځ لنډ آرام",
+      comm_title:"سیالي، ازموینې او خبرې کول", comm_lede:"له نورو زده کوونکو سره وصل شئ او خپل ځان وازمایاست.",
+      comm_1_title:"د زده کوونکو لیست", comm_1_desc:"غوره تعقیب کوونکي دلته ښکاره کیږي",
+      comm_2_title:"ازموینې", comm_2_desc:"هره اونۍ لنډې ازموینې",
+      comm_3_title:"د زده کوونکو خبرې (Forum)", comm_3_desc:"پوښتنې وکړئ، له نورو زده کوونکو سره خبرې وکړئ",
+      comm_4_title:"لنډ زنګ یادونه", comm_4_desc:"هر ټاکل شوی وخت ته لنډ زنګ",
+      footer_text:"هوښیاره زده کړه — لومړنی نمونه"
+    },
+    en: {
+      brand_name:"Hoshyara Learning",
+      hero_title:"When there's no routine, we build one with you",
+      hero_desc:"For students who don't have a fixed daily schedule — build your timetable, track it, and move one step forward every day.",
+      hero_badge:"Early prototype — schedule builder is live",
+      nav_schedule:"Schedule", nav_notes:"Notes", nav_dashboard:"Dashboard", nav_community:"Community & Exams",
+      sch_title:"Build your daily schedule",
+      sch_lede:"This is just a tool — no one is judging whether you already have a routine or not.",
+      choice_manual_title:"Build it myself", choice_manual_desc:"Type each time and activity yourself",
+      choice_ai_title:"Build it with AI", choice_ai_desc:"Chat with the AI, it will suggest a plan",
+      add_row_btn:"+ Add another time", save_btn:"Save schedule",
+      ai_first_msg:"Hi! Let's build your daily schedule. What time do you wake up in the morning?",
+      chat_placeholder:"Type here...", send_btn:"Send",
+      edit_link:"✎ Edit again",
+      notes_title:"Notebook",
+      notes_lede:"Like your phone's notes app — write down which lesson you had, how it was taught, and what the homework was.",
+      notes_example_title:"For example", notes_example_text:'"Today we learned There is/are in grammar. Homework: write five sentences."',
+      tag_coming:"Coming in the full build",
+      dash_title:"Progress dashboard", dash_lede:"A full picture of your learning — one glance, all the information.",
+      dash_1_title:"Schedule tracking", dash_1_desc:"How many days you've fully followed your plan",
+      dash_progress_default:"Nothing saved yet",
+      dash_progress_filled:"{n} items saved",
+      tap_hint:"👆 Tap for the full chart",
+      chart_modal_title:"Your weekly progress",
+      stat_avg:"Average", stat_best:"Best day", stat_streak:"Day streak",
+      reg_title:"Welcome 👋", reg_sub:"Before we start, tell us a little about yourself",
+      reg_name_label:"Name", reg_name_ph:"Your name",
+      reg_father_label:"Father's name", reg_father_ph:"Father's name",
+      reg_school_label:"School", reg_private:"Private", reg_public:"Government",
+      reg_grade_label:"Grade", reg_grade_ph:"e.g. 9th",
+      reg_error:"Please fill in every field", reg_submit:"Register & start",
+      welcome_line:"Welcome, {name}!",
+      note_placeholder:"What did you learn today? Write it down...", note_add_btn:"+ Add note",
+      notes_empty:"No notes yet",
+      ai_timeout:"This feature doesn't work here right now — it's just a limit of this quick prototype; it will work properly on the real site.",
+      attach_file:"File/Image", attach_voice:"Record voice", attach_recording:"● Recording... (click to stop)",
+      attach_too_big:"This file is too large (keep it under 3 MB).", mic_denied:"Microphone permission was denied.",
+      badge_schedule:"📅 First schedule", badge_notes:"🗒️ Active note-taker", badge_none:"No badges yet — get started!",
+      chart_disclaimer:"This is sample data only — real weekly numbers show up once you use the real site",
+      dash_2_title:"Badges & certificates", dash_2_desc:"Digital rewards for consistent learning",
+      dash_3_title:"Offline access", dash_3_desc:"View your plan even without internet",
+      dash_4_title:"Rest reminders", dash_4_desc:"Short breaks between long study sessions",
+      comm_title:"Community, exams & chat", comm_lede:"Connect with other students and test yourself.",
+      comm_1_title:"Leaderboard", comm_1_desc:"Top consistent students appear here",
+      comm_2_title:"Exams", comm_2_desc:"Short exams every week",
+      comm_3_title:"Student forum", comm_3_desc:"Ask questions, chat with other students",
+      comm_4_title:"Short alarm reminders", comm_4_desc:"A short ring at each scheduled time",
+      footer_text:"Hoshyara Zdakra — early prototype"
+    },
+    fa: {
+      brand_name:"یادگیری هوشمند",
+      hero_title:"وقتی روزمره‌ات نظم ندارد، با تو نظمش می‌دهیم",
+      hero_desc:"برای دانش‌آموزانی که برنامه روزانه ثابت ندارند — تقسیم اوقات خود را بسازید، آن را دنبال کنید و هر روز یک قدم پیش بروید.",
+      hero_badge:"نمونه اولیه — بخش تقسیم اوقات فعال است",
+      nav_schedule:"تقسیم اوقات", nav_notes:"یادداشت", nav_dashboard:"داشبورد", nav_community:"رقابت و امتحانات",
+      sch_title:"تقسیم اوقات روزانه خود را بسازید",
+      sch_lede:"این فقط یک ابزار است — هیچ‌کس قضاوت نمی‌کند که قبلاً برنامه داشته‌اید یا نه.",
+      choice_manual_title:"خودم می‌سازم", choice_manual_desc:"هر ساعت و فعالیت را خودتان بنویسید",
+      choice_ai_title:"با کمک AI بسازم", choice_ai_desc:"با AI صحبت کنید، پیشنهاد می‌دهد",
+      add_row_btn:"+ افزودن یک زمان دیگر", save_btn:"ذخیره تقسیم اوقات",
+      ai_first_msg:"سلام! بیایید تقسیم اوقات روزانه شما را بسازیم. صبح‌ها چه ساعتی بیدار می‌شوید؟",
+      chat_placeholder:"اینجا بنویسید...", send_btn:"ارسال",
+      edit_link:"✎ ویرایش دوباره",
+      notes_title:"دفترچه یادداشت",
+      notes_lede:"مانند اپلیکیشن یادداشت موبایل شما — اینجا بنویسید چه درسی خواندید و کار خانگی چه بود.",
+      notes_example_title:"به عنوان مثال", notes_example_text:'"امروز There is/are را در گرامر یاد گرفتیم. کار خانگی: پنج جمله بنویسید."',
+      tag_coming:"در نسخه اصلی می‌آید",
+      dash_title:"داشبورد پیشرفت", dash_lede:"تصویر کامل یادگیری شما — یک نگاه، همه اطلاعات.",
+      dash_1_title:"پیگیری تقسیم اوقات", dash_1_desc:"چند روز برنامه خود را کامل دنبال کرده‌اید",
+      dash_progress_default:"هنوز چیزی ثبت نشده",
+      dash_progress_filled:"{n} مورد ثبت شده",
+      tap_hint:"👆 برای نمودار کامل کلیک کنید",
+      chart_modal_title:"پیشرفت هفتگی شما",
+      stat_avg:"میانگین", stat_best:"بهترین روز", stat_streak:"روزهای پیاپی",
+      reg_title:"خوش آمدید 👋", reg_sub:"قبل از شروع، کمی خودتان را معرفی کنید",
+      reg_name_label:"نام", reg_name_ph:"نام شما",
+      reg_father_label:"نام پدر", reg_father_ph:"نام پدر",
+      reg_school_label:"مکتب", reg_private:"خصوصی", reg_public:"دولتی",
+      reg_grade_label:"صنف", reg_grade_ph:"مثال: نهم",
+      reg_error:"لطفاً همه فیلدها را پر کنید", reg_submit:"ثبت و شروع",
+      welcome_line:"خوش آمدید، {name}!",
+      note_placeholder:"امروز چه یاد گرفتید؟ بنویسید...", note_add_btn:"+ افزودن یادداشت",
+      notes_empty:"هنوز یادداشتی نیست",
+      ai_timeout:"این بخش اکنون اینجا کار نمی‌کند — این فقط محدودیت این نمونه سریع است، در سایت اصلی درست کار خواهد کرد.",
+      attach_file:"فایل/عکس", attach_voice:"ضبط صدا", attach_recording:"● در حال ضبط... (برای توقف کلیک کنید)",
+      attach_too_big:"این فایل خیلی بزرگ است (کمتر از ۳ مگابایت استفاده کنید).", mic_denied:"اجازه میکروفون داده نشد.",
+      badge_schedule:"📅 اولین برنامه", badge_notes:"🗒️ یادداشت‌نویس فعال", badge_none:"هنوز نشانی نیست — شروع کنید!",
+      chart_disclaimer:"این فقط داده نمونه است — ارقام واقعی هفتگی فقط با سایت اصلی نمایش داده می‌شود",
+      dash_2_title:"نشان و گواهی‌نامه", dash_2_desc:"پاداش دیجیتال برای یادگیری مداوم",
+      dash_3_title:"دسترسی آفلاین", dash_3_desc:"بدون اینترنت هم برنامه خود را ببینید",
+      dash_4_title:"یادآوری استراحت", dash_4_desc:"استراحت کوتاه بین ساعات طولانی درس",
+      comm_title:"رقابت، امتحانات و گفتگو", comm_lede:"با سایر دانش‌آموزان ارتباط برقرار کنید و خود را بیازمایید.",
+      comm_1_title:"لیست برترین‌ها", comm_1_desc:"دانش‌آموزان با بهترین پیگیری اینجا نمایش داده می‌شوند",
+      comm_2_title:"امتحانات", comm_2_desc:"امتحانات کوتاه هر هفته",
+      comm_3_title:"گفتگوی دانش‌آموزان", comm_3_desc:"سؤال بپرسید، با دیگران گفتگو کنید",
+      comm_4_title:"یادآوری کوتاه", comm_4_desc:"یک زنگ کوتاه در هر زمان تعیین‌شده",
+      footer_text:"هوښیاره زده کړه — نمونه اولیه"
+    },
+    ar: {
+      brand_name:"التعلم الذكي",
+      hero_title:"عندما لا يكون لديك روتين، نبنيه معك",
+      hero_desc:"للطلاب الذين ليس لديهم جدول يومي ثابت — أنشئ جدولك الزمني، تابعه، وتقدم خطوة كل يوم.",
+      hero_badge:"نموذج أولي — ميزة الجدول الزمني فعّالة",
+      nav_schedule:"الجدول الزمني", nav_notes:"الملاحظات", nav_dashboard:"لوحة التحكم", nav_community:"المنافسة والاختبارات",
+      sch_title:"أنشئ جدولك اليومي",
+      sch_lede:"هذه مجرد أداة — لا أحد يحكم عليك إن كان لديك جدول سابق أم لا.",
+      choice_manual_title:"سأنشئه بنفسي", choice_manual_desc:"اكتب كل وقت ونشاط بنفسك",
+      choice_ai_title:"بمساعدة الذكاء الاصطناعي", choice_ai_desc:"تحدث مع الذكاء الاصطناعي وسيقترح خطة",
+      add_row_btn:"+ إضافة وقت آخر", save_btn:"حفظ الجدول",
+      ai_first_msg:"مرحباً! لنبنِ جدولك اليومي. في أي ساعة تستيقظ صباحاً؟",
+      chat_placeholder:"اكتب هنا...", send_btn:"إرسال",
+      edit_link:"✎ تعديل مرة أخرى",
+      notes_title:"دفتر الملاحظات",
+      notes_lede:"مثل تطبيق الملاحظات في هاتفك — اكتب هنا الدرس الذي أخذته وكيف شُرح والواجب المنزلي.",
+      notes_example_title:"على سبيل المثال", notes_example_text:'"اليوم تعلمنا There is/are في القواعد. الواجب: اكتب خمس جمل."',
+      tag_coming:"قادم في النسخة الكاملة",
+      dash_title:"لوحة متابعة التقدم", dash_lede:"صورة كاملة لتعلمك — نظرة واحدة، كل المعلومات.",
+      dash_1_title:"متابعة الجدول الزمني", dash_1_desc:"عدد الأيام التي اتبعت فيها خطتك بالكامل",
+      dash_progress_default:"لم يتم حفظ أي شيء بعد",
+      dash_progress_filled:"{n} عناصر محفوظة",
+      tap_hint:"👆 اضغط لعرض الرسم البياني الكامل",
+      chart_modal_title:"تقدمك الأسبوعي",
+      stat_avg:"المعدل", stat_best:"أفضل يوم", stat_streak:"أيام متتالية",
+      reg_title:"مرحباً بك 👋", reg_sub:"قبل أن نبدأ، عرّفنا قليلاً بنفسك",
+      reg_name_label:"الاسم", reg_name_ph:"اسمك",
+      reg_father_label:"اسم الأب", reg_father_ph:"اسم الأب",
+      reg_school_label:"المدرسة", reg_private:"خاصة", reg_public:"حكومية",
+      reg_grade_label:"الصف", reg_grade_ph:"مثال: التاسع",
+      reg_error:"يرجى ملء جميع الحقول", reg_submit:"تسجيل والبدء",
+      welcome_line:"مرحباً، {name}!",
+      note_placeholder:"ماذا تعلمت اليوم؟ اكتبه...", note_add_btn:"+ إضافة ملاحظة",
+      notes_empty:"لا توجد ملاحظات بعد",
+      ai_timeout:"هذه الميزة لا تعمل هنا الآن — هذا مجرد قيد في هذا النموذج السريع، ستعمل بشكل صحيح في الموقع الفعلي.",
+      attach_file:"ملف/صورة", attach_voice:"تسجيل صوتي", attach_recording:"● جارٍ التسجيل... (اضغط للإيقاف)",
+      attach_too_big:"هذا الملف كبير جداً (استخدم أقل من ٣ ميجابايت).", mic_denied:"تم رفض إذن الميكروفون.",
+      badge_schedule:"📅 أول جدول", badge_notes:"🗒️ كاتب ملاحظات نشط", badge_none:"لا توجد شارات بعد — ابدأ الآن!",
+      chart_disclaimer:"هذه بيانات نموذجية فقط — الأرقام الأسبوعية الحقيقية تظهر فقط مع الموقع الفعلي",
+      dash_2_title:"شارات وشهادات", dash_2_desc:"مكافآت رقمية للتعلم المستمر",
+      dash_3_title:"الوصول دون إنترنت", dash_3_desc:"شاهد خطتك حتى بدون إنترنت",
+      dash_4_title:"تذكير بالراحة", dash_4_desc:"استراحة قصيرة بين ساعات الدراسة الطويلة",
+      comm_title:"المنافسة والاختبارات والدردشة", comm_lede:"تواصل مع طلاب آخرين واختبر نفسك.",
+      comm_1_title:"قائمة المتصدرين", comm_1_desc:"أفضل الطلاب التزاماً يظهرون هنا",
+      comm_2_title:"الاختبارات", comm_2_desc:"اختبارات قصيرة كل أسبوع",
+      comm_3_title:"منتدى الطلاب", comm_3_desc:"اطرح أسئلة، تحدث مع طلاب آخرين",
+      comm_4_title:"تذكير جرس قصير", comm_4_desc:"رنة قصيرة في كل وقت محدد",
+      footer_text:"هوښیاره زده کړه — نموذج أولي"
+    },
+    ur: {
+      brand_name:"ذہین تعلیم",
+      hero_title:"جب معمول نہ ہو، ہم مل کر بناتے ہیں",
+      hero_desc:"ان طلبہ کے لیے جن کا روزانہ کا کوئی مقررہ شیڈول نہیں — اپنا ٹائم ٹیبل بنائیں، اسے فالو کریں، اور ہر روز ایک قدم آگے بڑھیں۔",
+      hero_badge:"ابتدائی نمونہ — شیڈول فیچر فعال ہے",
+      nav_schedule:"شیڈول", nav_notes:"نوٹس", nav_dashboard:"ڈیش بورڈ", nav_community:"مقابلہ اور امتحانات",
+      sch_title:"اپنا روزانہ شیڈول بنائیں",
+      sch_lede:"یہ صرف ایک ٹول ہے — کوئی فیصلہ نہیں کرتا کہ آپ کا پہلے شیڈول تھا یا نہیں۔",
+      choice_manual_title:"خود بناؤں گا", choice_manual_desc:"ہر وقت اور کام خود لکھیں",
+      choice_ai_title:"AI کی مدد سے بناؤں", choice_ai_desc:"AI سے بات کریں، وہ تجویز دے گا",
+      add_row_btn:"+ ایک اور وقت شامل کریں", save_btn:"شیڈول محفوظ کریں",
+      ai_first_msg:"سلام! آئیے آپ کا روزانہ شیڈول بناتے ہیں۔ آپ صبح کس وقت اٹھتے ہیں؟",
+      chat_placeholder:"یہاں لکھیں...", send_btn:"بھیجیں",
+      edit_link:"✎ دوبارہ ترمیم کریں",
+      notes_title:"نوٹ بک",
+      notes_lede:"آپ کے موبائل کی نوٹس ایپ کی طرح — یہاں لکھیں کہ کون سا سبق پڑھایا گیا اور ہوم ورک کیا تھا۔",
+      notes_example_title:"مثال کے طور پر", notes_example_text:'"آج ہم نے گرامر میں There is/are سیکھا۔ ہوم ورک: پانچ جملے لکھیں۔"',
+      tag_coming:"مکمل ورژن میں شامل ہوگا",
+      dash_title:"پیش رفت ڈیش بورڈ", dash_lede:"آپ کی تعلیم کی مکمل تصویر — ایک نظر میں تمام معلومات۔",
+      dash_1_title:"شیڈول ٹریکنگ", dash_1_desc:"کتنے دن آپ نے اپنا منصوبہ مکمل فالو کیا",
+      dash_progress_default:"ابھی تک کچھ محفوظ نہیں ہوا",
+      dash_progress_filled:"{n} چیزیں محفوظ ہوئیں",
+      tap_hint:"👆 مکمل چارٹ کے لیے تھپتھپائیں",
+      chart_modal_title:"آپ کی ہفتہ وار پیش رفت",
+      stat_avg:"اوسط", stat_best:"بہترین دن", stat_streak:"لگاتار دن",
+      reg_title:"خوش آمدید 👋", reg_sub:"شروع کرنے سے پہلے، اپنے بارے میں کچھ بتائیں",
+      reg_name_label:"نام", reg_name_ph:"آپ کا نام",
+      reg_father_label:"والد کا نام", reg_father_ph:"والد کا نام",
+      reg_school_label:"سکول", reg_private:"نجی", reg_public:"سرکاری",
+      reg_grade_label:"جماعت", reg_grade_ph:"مثلاً: نہم",
+      reg_error:"براہ کرم تمام خانے پُر کریں", reg_submit:"رجسٹر کریں اور شروع کریں",
+      welcome_line:"خوش آمدید، {name}!",
+      note_placeholder:"آج آپ نے کیا سیکھا؟ لکھیں...", note_add_btn:"+ نوٹ شامل کریں",
+      notes_empty:"ابھی تک کوئی نوٹ نہیں",
+      ai_timeout:"یہ فیچر ابھی یہاں کام نہیں کرتا — یہ صرف اس فوری نمونے کی حد ہے، اصل سائٹ پر ٹھیک کام کرے گا۔",
+      attach_file:"فائل/تصویر", attach_voice:"آواز ریکارڈ کریں", attach_recording:"● ریکارڈنگ... (روکنے کے لیے کلک کریں)",
+      attach_too_big:"یہ فائل بہت بڑی ہے (3 MB سے کم استعمال کریں)۔", mic_denied:"مائیکروفون کی اجازت نہیں ملی۔",
+      badge_schedule:"📅 پہلا شیڈول", badge_notes:"🗒️ فعال نوٹ لکھنے والا", badge_none:"ابھی تک کوئی بیج نہیں — شروع کریں!",
+      chart_disclaimer:"یہ صرف نمونہ ڈیٹا ہے — اصل ہفتہ وار اعداد صرف اصل سائٹ کے ساتھ نظر آتے ہیں",
+      dash_2_title:"بیج اور سرٹیفکیٹ", dash_2_desc:"مسلسل سیکھنے کے لیے ڈیجیٹل انعام",
+      dash_3_title:"آف لائن رسائی", dash_3_desc:"انٹرنیٹ کے بغیر بھی اپنا منصوبہ دیکھیں",
+      dash_4_title:"آرام کی یاد دہانی", dash_4_desc:"طویل مطالعے کے درمیان مختصر آرام",
+      comm_title:"مقابلہ، امتحانات اور بات چیت", comm_lede:"دوسرے طلبہ سے جڑیں اور خود کو آزمائیں۔",
+      comm_1_title:"لیڈر بورڈ", comm_1_desc:"بہترین پیروی کرنے والے طلبہ یہاں نظر آتے ہیں",
+      comm_2_title:"امتحانات", comm_2_desc:"ہر ہفتے مختصر امتحانات",
+      comm_3_title:"طلبہ کا فورم", comm_3_desc:"سوالات پوچھیں، دوسرے طلبہ سے بات کریں",
+      comm_4_title:"مختصر گھنٹی یاد دہانی", comm_4_desc:"ہر مقررہ وقت پر ایک مختصر گھنٹی",
+      footer_text:"هوښیاره زده کړه — ابتدائی نمونہ"
+    }
+  };
+  const rtlLangs = ['ps','fa','ar','ur'];
+  function setLang(lang){
+    const dict = i18n[lang] || i18n.ps;
+    currentLang = i18n[lang] ? lang : 'ps';
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const key = el.getAttribute('data-i18n');
+      if(dict[key]) el.textContent = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+      const key = el.getAttribute('data-i18n-ph');
+      if(dict[key]) el.placeholder = dict[key];
+    });
+    document.documentElement.setAttribute('dir', rtlLangs.includes(lang) ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', lang);
+    if(dict.brand_name) document.title = dict.brand_name;
+    document.querySelectorAll('.lang-pill').forEach(p=>{
+      p.classList.toggle('active', p.dataset.lang === lang);
+    });
+    try{ localStorage.setItem('hz_lang', lang); }catch(e){}
+    try{
+      const saved = localStorage.getItem('hz_schedule');
+      if(saved){
+        const items = JSON.parse(saved);
+        if(items && items.length) updateDashboard(items);
+      }
+    }catch(e){}
+    renderNotes();
+    updateBadges();
+    try{
+      const prof = localStorage.getItem('hz_profile');
+      if(prof) showWelcome(JSON.parse(prof));
+    }catch(e){}
+  }
+  try{
+    const savedLang = localStorage.getItem('hz_lang');
+    if(savedLang && i18n[savedLang]) setLang(savedLang);
+  }catch(e){}
+</script>
+
+</body>
+</html>
