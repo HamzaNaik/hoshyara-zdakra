@@ -3,6 +3,7 @@
 
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -10,6 +11,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '5mb' })); // 5mb so small note attachments can be sent as base64
+app.use(express.static(path.join(__dirname, 'public'))); // serves the real website files
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -265,7 +267,55 @@ app.post('/api/ai-chat', async (req, res) => {
   }
 });
 
+// ---------- Admin dashboard: AI-composed summary ----------
+// Gemini looks at the real numbers and writes a short, human summary in Pashto.
+app.get('/api/admin/dashboard', requireAdmin, async (req, res) => {
+  try {
+    const { data: allStudents, error } = await supabase.from('students').select('*');
+    if (error) throw error;
+
+    const { data: classes } = await supabase.from('classes').select('*');
+
+    const pending = allStudents.filter(s => s.status === 'pending');
+    const approved = allStudents.filter(s => s.status === 'approved');
+    const byGrade = {};
+    approved.forEach(s => { byGrade[s.grade] = (byGrade[s.grade] || 0) + 1; });
+
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const prompt = `ته د یو ښوونځي مدیر لپاره لنډ او مفید راپور لیکونکی یې. لاندې ارقام دي، پرې بنسټ یو ډېر لنډ (۲-۳ جملې)، دوستانه، مفید لنډیز په پښتو ژبه ولیکه چې مدیر ته وښیي اوسنی حالت څه دی. یوازې متن ولیکه، هیڅ نور شکل مه کاروه.
+ټول زده کوونکي: ${allStudents.length}
+منتظر تایید: ${pending.length}
+تایید شوي: ${approved.length}
+ټولګي: ${JSON.stringify(byGrade)}`;
+
+    let summary = '';
+    try {
+      const result = await model.generateContent(prompt);
+      summary = result.response.text();
+    } catch (aiErr) {
+      summary = `اوس مهال ${allStudents.length} زده کوونکي ثبت شوي، ${pending.length} یې منتظر تایید دي.`;
+    }
+
+    res.json({
+      summary,
+      totals: { all: allStudents.length, pending: pending.length, approved: approved.length },
+      byGrade,
+      pendingStudents: pending,
+      classes: classes || [],
+      approvedStudents: approved,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'server_error' });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Hoshyara Zdakra server running on port ${PORT}`);
 });
+
+
+
+
+
