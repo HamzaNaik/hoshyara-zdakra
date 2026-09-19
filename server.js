@@ -34,13 +34,13 @@ app.get('/', (req, res) => {
 // A student submits this form; it goes in as "pending" until Hamza approves it.
 app.post('/api/register', async (req, res) => {
   try {
-    const { name, father_name, school_type, grade } = req.body;
-    if (!name || !father_name || !school_type || !grade) {
+    const { name, father_name, school_type, grade, country, age, agreed_rules } = req.body;
+    if (!name || !father_name || !grade || !country || !age || !agreed_rules) {
       return res.status(400).json({ error: 'missing_fields' });
     }
     const { data, error } = await supabase
       .from('students')
-      .insert([{ name, father_name, school_type, grade, status: 'pending' }])
+      .insert([{ name, father_name, school_type: school_type || 'other', grade, country, age, agreed_rules, status: 'pending' }])
       .select()
       .single();
     if (error) throw error;
@@ -140,6 +140,94 @@ app.post('/api/admin/reject/:id', requireAdmin, async (req, res) => {
       .single();
     if (error) throw error;
     res.json({ student: data });
+  } catch (e) {
+    res.status(500).json({ error: 'server_error' });
+  }
+});
+
+// Approve every pending student in one click
+app.post('/api/admin/approve-all', requireAdmin, async (req, res) => {
+  try {
+    const { data: pending, error } = await supabase.from('students').select('*').eq('status', 'pending');
+    if (error) throw error;
+    for (const student of pending) {
+      let { data: existingClass } = await supabase.from('classes').select('*').eq('grade_label', student.grade).single();
+      let classId;
+      if (existingClass) {
+        classId = existingClass.id;
+      } else {
+        const { data: newClass } = await supabase.from('classes').insert([{ grade_label: student.grade }]).select().single();
+        classId = newClass.id;
+      }
+      await supabase.from('students').update({ status: 'approved', class_id: classId }).eq('id', student.id);
+    }
+    res.json({ approved: pending.length });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'server_error' });
+  }
+});
+
+// Suspend or remove a student for breaking the rules, with a reason on record
+app.post('/api/admin/suspend/:id', requireAdmin, async (req, res) => {
+  try {
+    const { reason } = req.body;
+    const { data, error } = await supabase
+      .from('students')
+      .update({ status: 'suspended', status_reason: reason || null })
+      .eq('id', req.params.id)
+      .select()
+      .single();
+    if (error) throw error;
+    res.json({ student: data });
+  } catch (e) {
+    res.status(500).json({ error: 'server_error' });
+  }
+});
+
+app.post('/api/admin/remove/:id', requireAdmin, async (req, res) => {
+  try {
+    const { reason } = req.body;
+    const { data, error } = await supabase
+      .from('students')
+      .update({ status: 'removed', status_reason: reason || null })
+      .eq('id', req.params.id)
+      .select()
+      .single();
+    if (error) throw error;
+    res.json({ student: data });
+  } catch (e) {
+    res.status(500).json({ error: 'server_error' });
+  }
+});
+
+// Private message from admin to one specific student
+app.post('/api/admin/message/:studentId', requireAdmin, async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ error: 'missing_message' });
+    const { data, error } = await supabase
+      .from('messages')
+      .insert([{ student_id: req.params.studentId, message }])
+      .select()
+      .single();
+    if (error) throw error;
+    res.json({ message: data });
+  } catch (e) {
+    res.status(500).json({ error: 'server_error' });
+  }
+});
+
+app.get('/api/messages/:studentId', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('student_id', req.params.studentId)
+      .order('created_at', { ascending: false })
+      .limit(10);
+    if (error) throw error;
+    res.json({ messages: data });
   } catch (e) {
     res.status(500).json({ error: 'server_error' });
   }
