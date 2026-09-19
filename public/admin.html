@@ -75,6 +75,15 @@
     display:block; margin:20px auto 40px; background:none; border:1.5px solid var(--line);
     color:var(--ink); font-family:inherit; font-size:13.5px; padding:9px 18px; border-radius:100px; cursor:pointer;
   }
+  .announce-box{
+    background:var(--sand-2); border:1.5px solid var(--line); border-radius:var(--radius);
+    padding:14px; margin-bottom:20px;
+  }
+  .announce-box textarea{
+    width:100%; font-family:inherit; font-size:14px; padding:10px 12px; border-radius:9px;
+    border:1.5px solid var(--line); background:var(--sand); color:var(--ink); min-height:60px; margin-bottom:10px; resize:vertical;
+  }
+  .announce-box button{ width:100%; }
 </style>
 </head>
 <body>
@@ -98,6 +107,12 @@
     <div class="summary-card">
       <div class="label">🤖 د AI لخوا لیکل شوی لنډیز</div>
       <div id="ai-summary">...</div>
+    </div>
+
+    <h2 class="section-title">📢 زده کوونکو ته پیغام ولېږئ</h2>
+    <div class="announce-box">
+      <textarea id="announce-input" placeholder="لکه: سبا به د ریاضي درس وي، ټول چمتو اوسئ..."></textarea>
+      <button class="btn approve" onclick="sendAnnouncement()">لېږل</button>
     </div>
 
     <div class="stat-row">
@@ -191,6 +206,19 @@
       console.error(e);
       alert('د معلوماتو راوړلو کې ستونزه رامنځ ته شوه');
     }
+  }
+
+  async function sendAnnouncement(){
+    const input = document.getElementById('announce-input');
+    const message = input.value.trim();
+    if(!message) return;
+    await fetch('/api/admin/announcement', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+      body: JSON.stringify({ message })
+    });
+    input.value = '';
+    alert('پیغام ولېږل شو ✅');
   }
 
   async function approveStudent(id){
