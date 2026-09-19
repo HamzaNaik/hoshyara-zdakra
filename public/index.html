@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ps" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -653,6 +653,7 @@
     <p data-i18n="hero_desc">د هغو زده کوونکو لپاره چې د ورځې لپاره ثابت پروګرام نه لري — خپل تقسیم اوقات جوړ کړئ، تعقیب یې کړئ، او هره ورځ یو ګام مخکې لاړ شئ.</p>
     <div class="hero-badge"><span class="dot"></span> <span data-i18n="hero_badge">لومړنی نمونه — تقسیم اوقات فعال دی</span></div>
     <p id="welcome-line" style="margin-top:14px; font-size:14.5px; display:none;"></p>
+    <div id="announce-banner" style="display:none; margin-top:16px; background:rgba(226,169,79,0.15); border:1px solid rgba(226,169,79,0.4); border-radius:10px; padding:12px 16px; font-size:14px;"></div>
     <div class="lang-note">
       <button class="lang-pill active" data-lang="ps" onclick="setLang('ps')">پښتو</button>
       <button class="lang-pill" data-lang="fa" onclick="setLang('fa')">دري</button>
@@ -712,6 +713,7 @@
         <input type="text" id="chat-input" data-i18n-ph="chat_placeholder" placeholder="دلته ولیکئ...">
         <button id="chat-send-btn" onclick="aiRespond()" data-i18n="send_btn">لیږل</button>
       </div>
+      <button class="edit-link" id="save-ai-schedule-btn" onclick="saveAiSchedule()" style="margin-top:14px; display:block; width:100%; text-align:center; background:var(--ochre); color:#fff; padding:11px; border-radius:9px; text-decoration:none; border:none; cursor:pointer; font-family:inherit; font-size:14px; font-weight:700;" data-i18n="save_ai_schedule_btn">📅 له همدې خبرو نه زما تقسیم اوقات کیږدئ</button>
     </div>
 
     <!-- View mode -->
@@ -1306,6 +1308,53 @@
     if(sendBtn) sendBtn.disabled = false;
     log.scrollTop = log.scrollHeight;
   }
+
+  async function saveAiSchedule(){
+    const btn = document.getElementById('save-ai-schedule-btn');
+    const studentId = localStorage.getItem('hz_student_id');
+    if(aiTurns.length === 0){
+      alert('لومړی له AI سره لږ خبرې وکړئ');
+      return;
+    }
+    const originalText = btn.textContent;
+    btn.textContent = '...';
+    btn.disabled = true;
+    try{
+      const res = await fetch('/api/ai-extract-schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ history: aiTurns, studentId })
+      });
+      const data = await res.json();
+      if(data.items && data.items.length){
+        renderSchedule(data.items);
+        updateDashboard(data.items);
+        updateBadges();
+        try{ localStorage.setItem('hz_schedule', JSON.stringify(data.items)); }catch(e){}
+        document.getElementById('panel-ai').classList.remove('visible');
+        document.getElementById('panel-view').classList.add('visible');
+      } else {
+        alert('نشو کولی چې له خبرو نه تقسیم اوقات وباسو — لومړی AI ته وخت او کارونه ووایاست.');
+      }
+    }catch(e){
+      alert('یوه ستونزه رامنځ ته شوه، بیا هڅه وکړئ.');
+    }
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+
+  function loadAnnouncements(){
+    fetch('/api/announcements')
+      .then(r => r.json())
+      .then(({ announcements }) => {
+        if(!announcements || announcements.length === 0) return;
+        const banner = document.getElementById('announce-banner');
+        banner.innerHTML = '📢 ' + escapeHtml(announcements[0].message);
+        banner.style.display = 'block';
+      })
+      .catch(() => {});
+  }
+  loadAnnouncements();
   document.getElementById('chat-input').addEventListener('keydown', e=>{
     if(e.key==='Enter') aiRespond();
   });
@@ -1324,7 +1373,7 @@
       choice_ai_title:"د AI په مرسته جوړ کړم", choice_ai_desc:"خبرې وکړئ، AI به وړاندیز درکړي",
       add_row_btn:"+ یو وخت نور اضافه کړئ", save_btn:"تقسیم اوقات کیږدئ (Save)",
       ai_first_msg:"سلام! راځئ ستاسو د ورځې تقسیم اوقات جوړ کړو. تاسو سهار کومه ساعت راویښیږئ؟",
-      chat_placeholder:"دلته ولیکئ...", send_btn:"لیږل",
+      chat_placeholder:"دلته ولیکئ...", send_btn:"لیږل", save_ai_schedule_btn:"📅 له همدې خبرو نه زما تقسیم اوقات کیږدئ",
       edit_link:"✎ بیا سمون ورکړئ",
       notes_title:"یادداشت کتاب",
       notes_lede:"لکه ستاسو د موبایل نوټ اپ — دلته لیکئ چې کوم درس مو ولوستل، څنګه تشریح شو، او کورنۍ دنده څه وه.",
@@ -1373,7 +1422,7 @@
       choice_ai_title:"Build it with AI", choice_ai_desc:"Chat with the AI, it will suggest a plan",
       add_row_btn:"+ Add another time", save_btn:"Save schedule",
       ai_first_msg:"Hi! Let's build your daily schedule. What time do you wake up in the morning?",
-      chat_placeholder:"Type here...", send_btn:"Send",
+      chat_placeholder:"Type here...", send_btn:"Send", save_ai_schedule_btn:"📅 Save this as my schedule",
       edit_link:"✎ Edit again",
       notes_title:"Notebook",
       notes_lede:"Like your phone's notes app — write down which lesson you had, how it was taught, and what the homework was.",
@@ -1422,7 +1471,7 @@
       choice_ai_title:"با کمک AI بسازم", choice_ai_desc:"با AI صحبت کنید، پیشنهاد می‌دهد",
       add_row_btn:"+ افزودن یک زمان دیگر", save_btn:"ذخیره تقسیم اوقات",
       ai_first_msg:"سلام! بیایید تقسیم اوقات روزانه شما را بسازیم. صبح‌ها چه ساعتی بیدار می‌شوید؟",
-      chat_placeholder:"اینجا بنویسید...", send_btn:"ارسال",
+      chat_placeholder:"اینجا بنویسید...", send_btn:"ارسال", save_ai_schedule_btn:"📅 این را برنامه من ذخیره کن",
       edit_link:"✎ ویرایش دوباره",
       notes_title:"دفترچه یادداشت",
       notes_lede:"مانند اپلیکیشن یادداشت موبایل شما — اینجا بنویسید چه درسی خواندید و کار خانگی چه بود.",
@@ -1471,7 +1520,7 @@
       choice_ai_title:"بمساعدة الذكاء الاصطناعي", choice_ai_desc:"تحدث مع الذكاء الاصطناعي وسيقترح خطة",
       add_row_btn:"+ إضافة وقت آخر", save_btn:"حفظ الجدول",
       ai_first_msg:"مرحباً! لنبنِ جدولك اليومي. في أي ساعة تستيقظ صباحاً؟",
-      chat_placeholder:"اكتب هنا...", send_btn:"إرسال",
+      chat_placeholder:"اكتب هنا...", send_btn:"إرسال", save_ai_schedule_btn:"📅 احفظ هذا كجدولي",
       edit_link:"✎ تعديل مرة أخرى",
       notes_title:"دفتر الملاحظات",
       notes_lede:"مثل تطبيق الملاحظات في هاتفك — اكتب هنا الدرس الذي أخذته وكيف شُرح والواجب المنزلي.",
@@ -1520,7 +1569,7 @@
       choice_ai_title:"AI کی مدد سے بناؤں", choice_ai_desc:"AI سے بات کریں، وہ تجویز دے گا",
       add_row_btn:"+ ایک اور وقت شامل کریں", save_btn:"شیڈول محفوظ کریں",
       ai_first_msg:"سلام! آئیے آپ کا روزانہ شیڈول بناتے ہیں۔ آپ صبح کس وقت اٹھتے ہیں؟",
-      chat_placeholder:"یہاں لکھیں...", send_btn:"بھیجیں",
+      chat_placeholder:"یہاں لکھیں...", send_btn:"بھیجیں", save_ai_schedule_btn:"📅 اسے میرا شیڈول محفوظ کریں",
       edit_link:"✎ دوبارہ ترمیم کریں",
       notes_title:"نوٹ بک",
       notes_lede:"آپ کے موبائل کی نوٹس ایپ کی طرح — یہاں لکھیں کہ کون سا سبق پڑھایا گیا اور ہوم ورک کیا تھا۔",
@@ -1593,7 +1642,7 @@
   }
   try{
     const savedLang = localStorage.getItem('hz_lang');
-    if(savedLang && i18n[savedLang]) setLang(savedLang);
+    setLang(savedLang && i18n[savedLang] ? savedLang : 'en');
   }catch(e){}
 </script>
 
