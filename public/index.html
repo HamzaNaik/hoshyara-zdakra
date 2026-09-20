@@ -436,6 +436,8 @@
     color:var(--ink);
     width:100%;
     max-width:420px;
+    max-height:88vh;
+    overflow-y:auto;
     border-radius:18px;
     padding:28px 24px;
   }
@@ -453,6 +455,26 @@
     background: var(--sand-2);
     color:var(--ink);
   }
+  .rules-box{
+    font-size:12.5px;
+    line-height:1.7;
+    background: var(--sand-2);
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:12px 14px;
+    max-height:130px;
+    overflow-y:auto;
+    white-space:pre-line;
+    margin-bottom:10px;
+  }
+  .rules-agree{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .rules-agree input{ margin-top:3px; width:auto; }
   .reg-toggle{ display:flex; gap:10px; }
   .reg-toggle button{
     flex:1;
@@ -619,30 +641,78 @@
 
 <div class="reg-overlay" id="reg-overlay">
   <div class="reg-card">
-    <h2 data-i18n="reg_title">ښه راغلاست 👋</h2>
-    <p class="reg-sub" data-i18n="reg_sub">مخکې له دې چې پیل کړو، لږ خپل ځان راوپیژنئ</p>
+    <h2 data-i18n="reg_title">Welcome 👋</h2>
+    <p class="reg-sub" data-i18n="reg_sub">Before we start, tell us a little about yourself</p>
 
     <div class="reg-field">
-      <label data-i18n="reg_name_label">نوم</label>
-      <input type="text" id="reg-name" data-i18n-ph="reg_name_ph" placeholder="ستاسو نوم">
+      <label data-i18n="reg_name_label">Name</label>
+      <input type="text" id="reg-name" data-i18n-ph="reg_name_ph" placeholder="Your name">
     </div>
     <div class="reg-field">
-      <label data-i18n="reg_father_label">د پلار نوم</label>
-      <input type="text" id="reg-father" data-i18n-ph="reg_father_ph" placeholder="د پلار نوم">
+      <label data-i18n="reg_father_label">Father's name</label>
+      <input type="text" id="reg-father" data-i18n-ph="reg_father_ph" placeholder="Father's name">
     </div>
     <div class="reg-field">
-      <label data-i18n="reg_school_label">ښوونځی</label>
-      <div class="reg-toggle">
-        <button type="button" id="reg-school-private" onclick="pickSchool('private')" data-i18n="reg_private">خصوصي</button>
-        <button type="button" id="reg-school-public" onclick="pickSchool('public')" data-i18n="reg_public">دولتي</button>
+      <label data-i18n="reg_country_label">Country</label>
+      <select id="reg-country">
+        <option value="">—</option>
+        <option>Afghanistan</option>
+        <option>Pakistan</option>
+        <option>India</option>
+        <option>Iran</option>
+        <option>United Kingdom</option>
+        <option>United States</option>
+        <option>Canada</option>
+        <option>Germany</option>
+        <option>Turkey</option>
+        <option data-i18n="reg_other">Other</option>
+      </select>
+    </div>
+    <div class="reg-field">
+      <label data-i18n="reg_age_label">Age</label>
+      <input type="number" id="reg-age" min="5" max="100" data-i18n-ph="reg_age_ph" placeholder="Age">
+    </div>
+    <div class="reg-field">
+      <label data-i18n="reg_grade_label">Grade</label>
+      <input type="text" id="reg-grade" data-i18n-ph="reg_grade_ph" placeholder="e.g. 9th">
+    </div>
+
+    <div class="reg-field">
+      <label data-i18n="reg_rules_label">School Rules</label>
+      <div class="rules-box" id="rules-box" data-i18n="reg_rules_text">
+        1. Students must respect teachers, administrators, and other students.
+        2. Students must not use offensive, abusive, or discriminatory language.
+        3. Students must not share their account with others.
+        4. Students must not upload illegal, harmful, or inappropriate content.
+        5. Students must use the platform for educational purposes only.
+        6. Students must not attempt to damage, hack, or misuse the system.
+        7. Repeated or serious violations may result in suspension or removal from the school.
       </div>
+      <label class="rules-agree">
+        <input type="checkbox" id="reg-agree">
+        <span data-i18n="reg_agree_label">I have read and agree to the School Rules and Policies.</span>
+      </label>
     </div>
-    <div class="reg-field">
-      <label data-i18n="reg_grade_label">ټولګی</label>
-      <input type="text" id="reg-grade" data-i18n-ph="reg_grade_ph" placeholder="لکه: نهم">
-    </div>
-    <div class="reg-error" id="reg-error" data-i18n="reg_error">مهرباني وکړئ ټول ځایونه ډک کړئ</div>
-    <button class="reg-submit" onclick="submitRegistration()" data-i18n="reg_submit">ثبت او پیل کول</button>
+
+    <div class="reg-error" id="reg-error" data-i18n="reg_error">Please fill in every field and agree to the rules</div>
+    <button class="reg-submit" onclick="submitRegistration()" data-i18n="reg_submit">Submit application</button>
+  </div>
+</div>
+
+<div class="reg-overlay hidden" id="pending-overlay">
+  <div class="reg-card" style="text-align:center;">
+    <div style="font-size:40px; margin-bottom:10px;">⏳</div>
+    <h2 data-i18n="pending_title">Application Submitted</h2>
+    <p class="reg-sub" data-i18n="pending_text">Your application has been submitted successfully. Please wait up to 24 hours while your application is reviewed by the School Administration.</p>
+    <button class="reg-submit" onclick="checkRegistration()" data-i18n="pending_refresh">Check status</button>
+  </div>
+</div>
+
+<div class="reg-overlay hidden" id="blocked-overlay">
+  <div class="reg-card" style="text-align:center;">
+    <div style="font-size:40px; margin-bottom:10px;" id="blocked-icon">❌</div>
+    <h2 id="blocked-title" data-i18n="rejected_title">Application Not Approved</h2>
+    <p class="reg-sub" id="blocked-text" data-i18n="rejected_text">Your application was not approved at this time.</p>
   </div>
 </div>
 
@@ -1096,18 +1166,15 @@
   }
 
   // ---- Registration ----
-  let pickedSchool = null;
-  function pickSchool(type){
-    pickedSchool = type;
-    document.getElementById('reg-school-private').classList.toggle('picked', type==='private');
-    document.getElementById('reg-school-public').classList.toggle('picked', type==='public');
-  }
   function submitRegistration(){
     const name = document.getElementById('reg-name').value.trim();
     const father = document.getElementById('reg-father').value.trim();
+    const country = document.getElementById('reg-country').value;
+    const age = document.getElementById('reg-age').value;
     const grade = document.getElementById('reg-grade').value.trim();
+    const agreed = document.getElementById('reg-agree').checked;
     const err = document.getElementById('reg-error');
-    if(!name || !father || !grade || !pickedSchool){
+    if(!name || !father || !grade || !country || !age || !agreed){
       err.style.display = 'block';
       return;
     }
@@ -1115,21 +1182,21 @@
     fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, father_name: father, school_type: pickedSchool, grade })
+      body: JSON.stringify({ name, father_name: father, country, age, grade, agreed_rules: agreed })
     })
     .then(r => r.json())
     .then(({ student }) => {
       if(!student) throw new Error('no student returned');
       localStorage.setItem('hz_student_id', student.id);
       localStorage.setItem('hz_profile', JSON.stringify(student));
-      document.getElementById('reg-overlay').classList.add('hidden');
-      showWelcome(student);
+      applyStudentStatus(student);
     })
     .catch(() => {
-      err.textContent = 'اړیکه ونشوه — بیا هڅه وکړئ';
+      err.textContent = 'Connection failed — please try again';
       err.style.display = 'block';
     });
   }
+
   function showWelcome(profile){
     const line = document.getElementById('welcome-line');
     if(!line) return;
@@ -1138,6 +1205,38 @@
     line.innerHTML = template.replace('{name}', `<span class="welcome-name">${escapeHtml(profile.name)}</span>`);
     line.style.display = 'block';
   }
+
+  function hideAllAuthScreens(){
+    document.getElementById('reg-overlay').classList.add('hidden');
+    document.getElementById('pending-overlay').classList.add('hidden');
+    document.getElementById('blocked-overlay').classList.add('hidden');
+  }
+
+  function applyStudentStatus(student){
+    const dict = i18n[currentLang] || i18n.ps;
+    hideAllAuthScreens();
+    if(student.status === 'approved'){
+      showWelcome(student);
+    } else if(student.status === 'pending'){
+      document.getElementById('pending-overlay').classList.remove('hidden');
+    } else if(student.status === 'rejected'){
+      document.getElementById('blocked-icon').textContent = '❌';
+      document.getElementById('blocked-title').textContent = dict.rejected_title || 'Application Not Approved';
+      document.getElementById('blocked-text').textContent = student.status_reason || (dict.rejected_text || 'Your application was not approved at this time.');
+      document.getElementById('blocked-overlay').classList.remove('hidden');
+    } else if(student.status === 'suspended'){
+      document.getElementById('blocked-icon').textContent = '⚠️';
+      document.getElementById('blocked-title').textContent = dict.suspended_title || 'Account Suspended';
+      document.getElementById('blocked-text').textContent = student.status_reason || (dict.suspended_text || 'Your account has been suspended by the School Administration.');
+      document.getElementById('blocked-overlay').classList.remove('hidden');
+    } else if(student.status === 'removed'){
+      document.getElementById('blocked-icon').textContent = '🚫';
+      document.getElementById('blocked-title').textContent = dict.removed_title || 'Removed from School';
+      document.getElementById('blocked-text').textContent = student.status_reason || (dict.removed_text || 'You have been removed from Hoshyara Zdakra School.');
+      document.getElementById('blocked-overlay').classList.remove('hidden');
+    }
+  }
+
   function checkRegistration(){
     const id = localStorage.getItem('hz_student_id');
     if(!id) return;
@@ -1146,8 +1245,7 @@
       .then(({ student }) => {
         if(student){
           localStorage.setItem('hz_profile', JSON.stringify(student));
-          document.getElementById('reg-overlay').classList.add('hidden');
-          showWelcome(student);
+          applyStudentStatus(student);
         }
       })
       .catch(() => {
@@ -1155,8 +1253,11 @@
         try{
           const saved = localStorage.getItem('hz_profile');
           if(saved){
-            document.getElementById('reg-overlay').classList.add('hidden');
-            showWelcome(JSON.parse(saved));
+            const cached = JSON.parse(saved);
+            if(cached.status === 'approved'){
+              document.getElementById('reg-overlay').classList.add('hidden');
+              showWelcome(cached);
+            }
           }
         }catch(e){}
       });
@@ -1393,6 +1494,13 @@
       reg_grade_label:"ټولګی", reg_grade_ph:"لکه: نهم",
       reg_error:"مهرباني وکړئ ټول ځایونه ډک کړئ", reg_submit:"ثبت او پیل کول",
       welcome_line:"ښه راغلې، {name}!",
+      reg_country_label:"هیواد", reg_other:"نور", reg_age_label:"عمر", reg_age_ph:"عمر",
+      reg_rules_label:"د ښوونځي قوانین", reg_agree_label:"ما د ښوونځي قوانین ولوستل او ومنل.",
+      reg_rules_text:"۱. زده کوونکي باید له ښوونکو، مدیرانو، او نورو زده کوونکو سره درناوی وکړي.\n۲. زده کوونکي باید توهین‌آمیز یا نامناسب ژبه ونه کاروي.\n۳. زده کوونکي باید خپل حساب له بل چا سره شریک نکړي.\n۴. زده کوونکي باید ناقانونه یا زیانمن مطالب اپلوډ نکړي.\n۵. زده کوونکي باید پلاتفارم یوازې د زده کړې لپاره وکاروي.\n۶. زده کوونکي باید سیسټم ته زیان ونه رسوي یا هک یې نکړي.\n۷. تکراري یا جدي سرغړونې کولی شي د ښوونځي څخه د ایستلو لامل شي.",
+      pending_title:"غوښتنلیک ولېږل شو", pending_text:"ستاسو غوښتنلیک بریالیتوب سره ولېږل شو. مهرباني وکړئ تر ۲۴ ساعتونو پورې انتظار وکړئ ترڅو د ادارې لخوا وکتل شي.", pending_refresh:"حالت وګورئ",
+      rejected_title:"غوښتنلیک ونه منل شو", rejected_text:"ستاسو غوښتنلیک اوس مهال ونه منل شو.",
+      suspended_title:"حساب ځنډول شوی", suspended_text:"ستاسو حساب د ادارې لخوا ځنډول شوی دی.",
+      removed_title:"له ښوونځي څخه ایستل شوی", removed_text:"تاسو د هوښیاره زده کړه ښوونځي څخه ایستل شوي یاست.",
       note_placeholder:"نن مو څه زده کړل؟ ولیکئ...", note_add_btn:"+ یادداشت اضافه کړئ",
       notes_empty:"لا تر اوسه هیڅ یادداشت نشته",
       ai_timeout:"دا برخه اوس مهال دلته کار نه کوي — دا یوازې د لنډې ازموینې محدودیت دی، اصلي سایټ کې به سمه کار وکړي.",
@@ -1442,6 +1550,13 @@
       reg_grade_label:"Grade", reg_grade_ph:"e.g. 9th",
       reg_error:"Please fill in every field", reg_submit:"Register & start",
       welcome_line:"Welcome, {name}!",
+      reg_country_label:"Country", reg_other:"Other", reg_age_label:"Age", reg_age_ph:"Age",
+      reg_rules_label:"School Rules", reg_agree_label:"I have read and agree to the School Rules and Policies.",
+      reg_rules_text:"1. Students must respect teachers, administrators, and other students.\n2. Students must not use offensive, abusive, or discriminatory language.\n3. Students must not share their account with others.\n4. Students must not upload illegal, harmful, or inappropriate content.\n5. Students must use the platform for educational purposes only.\n6. Students must not attempt to damage, hack, or misuse the system.\n7. Repeated or serious violations may result in suspension or removal from the school.",
+      pending_title:"Application Submitted", pending_text:"Your application has been submitted successfully. Please wait up to 24 hours while your application is reviewed by the School Administration.", pending_refresh:"Check status",
+      rejected_title:"Application Not Approved", rejected_text:"Your application was not approved at this time.",
+      suspended_title:"Account Suspended", suspended_text:"Your account has been suspended by the School Administration.",
+      removed_title:"Removed from School", removed_text:"You have been removed from Hoshyara Zdakra School.",
       note_placeholder:"What did you learn today? Write it down...", note_add_btn:"+ Add note",
       notes_empty:"No notes yet",
       ai_timeout:"This feature doesn't work here right now — it's just a limit of this quick prototype; it will work properly on the real site.",
@@ -1491,6 +1606,12 @@
       reg_grade_label:"صنف", reg_grade_ph:"مثال: نهم",
       reg_error:"لطفاً همه فیلدها را پر کنید", reg_submit:"ثبت و شروع",
       welcome_line:"خوش آمدید، {name}!",
+      reg_country_label:"کشور", reg_other:"دیگر", reg_age_label:"سن", reg_age_ph:"سن",
+      reg_rules_label:"مقررات مکتب", reg_agree_label:"من مقررات مکتب را خواندم و قبول کردم.",
+      pending_title:"درخواست ارسال شد", pending_text:"درخواست شما با موفقیت ارسال شد. لطفاً تا ۲۴ ساعت صبر کنید تا اداره آن را بررسی کند.", pending_refresh:"بررسی وضعیت",
+      rejected_title:"درخواست رد شد", rejected_text:"درخواست شما در حال حاضر تایید نشد.",
+      suspended_title:"حساب معلق شد", suspended_text:"حساب شما توسط اداره معلق شده است.",
+      removed_title:"از مکتب اخراج شد", removed_text:"شما از مکتب هوشیارا زده‌کړه اخراج شده‌اید.",
       note_placeholder:"امروز چه یاد گرفتید؟ بنویسید...", note_add_btn:"+ افزودن یادداشت",
       notes_empty:"هنوز یادداشتی نیست",
       ai_timeout:"این بخش اکنون اینجا کار نمی‌کند — این فقط محدودیت این نمونه سریع است، در سایت اصلی درست کار خواهد کرد.",
@@ -1539,6 +1660,12 @@
       reg_school_label:"المدرسة", reg_private:"خاصة", reg_public:"حكومية",
       reg_grade_label:"الصف", reg_grade_ph:"مثال: التاسع",
       reg_error:"يرجى ملء جميع الحقول", reg_submit:"تسجيل والبدء",
+      reg_country_label:"البلد", reg_other:"أخرى", reg_age_label:"العمر", reg_age_ph:"العمر",
+      reg_rules_label:"قوانين المدرسة", reg_agree_label:"لقد قرأت ووافقت على قوانين المدرسة.",
+      pending_title:"تم إرسال الطلب", pending_text:"تم إرسال طلبك بنجاح. يرجى الانتظار حتى ٢٤ ساعة ريثما تراجعه الإدارة.", pending_refresh:"تحقق من الحالة",
+      rejected_title:"لم تتم الموافقة على الطلب", rejected_text:"لم تتم الموافقة على طلبك في الوقت الحالي.",
+      suspended_title:"الحساب موقوف", suspended_text:"تم إيقاف حسابك من قبل الإدارة.",
+      removed_title:"تم الطرد من المدرسة", removed_text:"لقد تم طردك من مدرسة هوشیارا زده‌کړه.",
       welcome_line:"مرحباً، {name}!",
       note_placeholder:"ماذا تعلمت اليوم؟ اكتبه...", note_add_btn:"+ إضافة ملاحظة",
       notes_empty:"لا توجد ملاحظات بعد",
@@ -1588,6 +1715,12 @@
       reg_school_label:"سکول", reg_private:"نجی", reg_public:"سرکاری",
       reg_grade_label:"جماعت", reg_grade_ph:"مثلاً: نہم",
       reg_error:"براہ کرم تمام خانے پُر کریں", reg_submit:"رجسٹر کریں اور شروع کریں",
+      reg_country_label:"ملک", reg_other:"دیگر", reg_age_label:"عمر", reg_age_ph:"عمر",
+      reg_rules_label:"سکول کے قوانین", reg_agree_label:"میں نے سکول کے قوانین پڑھ لیے اور قبول کر لیے۔",
+      pending_title:"درخواست بھیج دی گئی", pending_text:"آپ کی درخواست کامیابی سے بھیج دی گئی۔ براہ کرم 24 گھنٹے انتظار کریں جب تک انتظامیہ اس کا جائزہ لے۔", pending_refresh:"حالت چیک کریں",
+      rejected_title:"درخواست منظور نہیں ہوئی", rejected_text:"آپ کی درخواست فی الحال منظور نہیں ہوئی۔",
+      suspended_title:"اکاؤنٹ معطل", suspended_text:"آپ کا اکاؤنٹ انتظامیہ نے معطل کر دیا ہے۔",
+      removed_title:"سکول سے نکال دیا گیا", removed_text:"آپ کو ہوشیارا زده‌کړه سکول سے نکال دیا گیا ہے۔",
       welcome_line:"خوش آمدید، {name}!",
       note_placeholder:"آج آپ نے کیا سیکھا؟ لکھیں...", note_add_btn:"+ نوٹ شامل کریں",
       notes_empty:"ابھی تک کوئی نوٹ نہیں",
