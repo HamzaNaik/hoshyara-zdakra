@@ -122,6 +122,7 @@
     </div>
 
     <h2 class="section-title">⏳ منتظر تایید</h2>
+    <button class="btn approve" style="width:100%; margin-bottom:12px;" onclick="approveAll()">✅ ټول یو ځل تایید کړئ (Approve All)</button>
     <div id="pending-list"></div>
 
     <h2 class="section-title">🏫 ټولګي</h2>
@@ -171,7 +172,7 @@
           <div class="student-card">
             <div class="info">
               <strong>${escapeHtml(s.name)}</strong>
-              <span>د پلار نوم: ${escapeHtml(s.father_name)} · ${s.school_type === 'private' ? 'خصوصي' : 'دولتي'} · ټولګی: ${escapeHtml(s.grade)}</span>
+              <span>د پلار نوم: ${escapeHtml(s.father_name)} · ${escapeHtml(s.country || '—')} · عمر: ${escapeHtml(String(s.age || '—'))} · ټولګی: ${escapeHtml(s.grade)}</span>
             </div>
             <div class="actions">
               <button class="btn approve" onclick="approveStudent('${s.id}')">تایید</button>
@@ -194,7 +195,12 @@
                 <div class="student-card">
                   <div class="info">
                     <strong>${escapeHtml(m.name)}</strong>
-                    <span>د پلار نوم: ${escapeHtml(m.father_name)}</span>
+                    <span>د پلار نوم: ${escapeHtml(m.father_name)} · ${escapeHtml(m.country || '—')}</span>
+                  </div>
+                  <div class="actions">
+                    <button class="btn reject" onclick="messageStudent('${m.id}')">✉️</button>
+                    <button class="btn reject" onclick="suspendStudent('${m.id}')">⏸️</button>
+                    <button class="btn reject" onclick="removeStudent('${m.id}')">🚫</button>
                   </div>
                 </div>
               `).join('')}
@@ -218,6 +224,41 @@
       body: JSON.stringify({ message })
     });
     input.value = '';
+    alert('پیغام ولېږل شو ✅');
+  }
+
+  async function approveAll(){
+    if(!confirm('ایا تاسو ډاډه یاست چې غواړئ ټول منتظر زده کوونکي یو ځل تایید کړئ؟')) return;
+    await fetch('/api/admin/approve-all', { method: 'POST', headers: { 'x-admin-password': adminPassword } });
+    loadDashboard();
+  }
+  async function suspendStudent(id){
+    const reason = prompt('د ځنډولو دلیل ولیکئ (اختیاري):') || '';
+    await fetch('/api/admin/suspend/' + id, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+      body: JSON.stringify({ reason })
+    });
+    loadDashboard();
+  }
+  async function removeStudent(id){
+    if(!confirm('ایا تاسو ډاډه یاست چې دا زده کوونکی له ښوونځي څخه ایستل غواړئ؟')) return;
+    const reason = prompt('د ایستلو دلیل ولیکئ (اختیاري):') || '';
+    await fetch('/api/admin/remove/' + id, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+      body: JSON.stringify({ reason })
+    });
+    loadDashboard();
+  }
+  async function messageStudent(id){
+    const message = prompt('پیغام ولیکئ:');
+    if(!message) return;
+    await fetch('/api/admin/message/' + id, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+      body: JSON.stringify({ message })
+    });
     alert('پیغام ولېږل شو ✅');
   }
 
