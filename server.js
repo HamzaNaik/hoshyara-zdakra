@@ -333,9 +333,17 @@ app.delete('/api/notes/:noteId', async (req, res) => {
 // ---------- AI chat (Gemini) ----------
 const SYSTEM_PROMPT = `ته د 'هوښیاره زده کړه' پلاتفارم کې یو مهربان AI مرستیال یې. که یو زده کوونکی له تاسو نه وپوښتي چې تا څوک جوړ کړی یې، په یوه لنډه جمله ووایه: 'زه د حمزه نایک لخوا جوړ شوی یم.' نور معلومات مه ورکوه. ستاسو دنده پراخه ده: (۱) که زده کوونکی غواړي چې خپل ورځنی تقسیم اوقات جوړ کړي، ورسره پوښتنې وکړئ او یو منظم تقسیم اوقات ورته وړاندې کړئ. (۲) که د درسونو (انګلیسي، ریاضي، او نور) په اړه پوښتنه کوي، ورسره مرسته وکړئ. (۳) که یې پوښتنه له زده کړې سره تړاو ونلري، هغې ته هم ریښتینی، مفصل، او مرستندویه ځواب ورکړئ. تل په پښتو ژبه، مهربانه، او روښانه ډول ځواب ورکړئ.`;
 
+function withTimeout(promise, ms, label){
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(label + '_timeout')), ms))
+  ]);
+}
+
 app.post('/api/ai-chat', async (req, res) => {
   try {
     const { history } = req.body; // [{role: 'user'|'model', text: '...'}, ...]
+    if (!history || !history.length) return res.status(400).json({ error: 'missing_history' });
     const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash', systemInstruction: SYSTEM_PROMPT });
 
     const chat = model.startChat({
@@ -346,12 +354,12 @@ app.post('/api/ai-chat', async (req, res) => {
     });
 
     const lastMessage = history[history.length - 1].text;
-    const result = await chat.sendMessage(lastMessage);
+    const result = await withTimeout(chat.sendMessage(lastMessage), 20000, 'ai_chat');
     const reply = result.response.text();
     res.json({ reply });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: 'ai_error' });
+    console.error('AI chat error:', e.message);
+    res.status(500).json({ error: 'ai_error', detail: e.message });
   }
 });
 
