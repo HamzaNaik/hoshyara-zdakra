@@ -1179,6 +1179,8 @@
       return;
     }
     err.style.display = 'none';
+    const submitBtn = document.querySelector('#reg-overlay .reg-submit');
+    if(submitBtn){ submitBtn.disabled = true; submitBtn.style.opacity = '0.6'; }
     fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1191,9 +1193,10 @@
       localStorage.setItem('hz_profile', JSON.stringify(student));
       applyStudentStatus(student);
     })
-    .catch(() => {
-      err.textContent = 'Connection failed — please try again';
+    .catch((e) => {
+      err.textContent = 'Error: ' + (e && e.message ? e.message : 'connection failed') + ' — please try again';
       err.style.display = 'block';
+      if(submitBtn){ submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
     });
   }
 
@@ -1207,9 +1210,17 @@
   }
 
   function hideAllAuthScreens(){
-    document.getElementById('reg-overlay').classList.add('hidden');
-    document.getElementById('pending-overlay').classList.add('hidden');
-    document.getElementById('blocked-overlay').classList.add('hidden');
+    const reg = document.getElementById('reg-overlay');
+    const pending = document.getElementById('pending-overlay');
+    const blocked = document.getElementById('blocked-overlay');
+    if(reg) reg.classList.add('hidden');
+    if(pending) pending.classList.add('hidden');
+    if(blocked) blocked.classList.add('hidden');
+  }
+
+  function setText(id, text){
+    const el = document.getElementById(id);
+    if(el) el.textContent = text;
   }
 
   function applyStudentStatus(student){
@@ -1218,22 +1229,26 @@
     if(student.status === 'approved'){
       showWelcome(student);
     } else if(student.status === 'pending'){
-      document.getElementById('pending-overlay').classList.remove('hidden');
+      const pending = document.getElementById('pending-overlay');
+      if(pending) pending.classList.remove('hidden');
     } else if(student.status === 'rejected'){
-      document.getElementById('blocked-icon').textContent = '❌';
-      document.getElementById('blocked-title').textContent = dict.rejected_title || 'Application Not Approved';
-      document.getElementById('blocked-text').textContent = student.status_reason || (dict.rejected_text || 'Your application was not approved at this time.');
-      document.getElementById('blocked-overlay').classList.remove('hidden');
+      setText('blocked-icon', '❌');
+      setText('blocked-title', dict.rejected_title || 'Application Not Approved');
+      setText('blocked-text', student.status_reason || (dict.rejected_text || 'Your application was not approved at this time.'));
+      const blocked = document.getElementById('blocked-overlay');
+      if(blocked) blocked.classList.remove('hidden');
     } else if(student.status === 'suspended'){
-      document.getElementById('blocked-icon').textContent = '⚠️';
-      document.getElementById('blocked-title').textContent = dict.suspended_title || 'Account Suspended';
-      document.getElementById('blocked-text').textContent = student.status_reason || (dict.suspended_text || 'Your account has been suspended by the School Administration.');
-      document.getElementById('blocked-overlay').classList.remove('hidden');
+      setText('blocked-icon', '⚠️');
+      setText('blocked-title', dict.suspended_title || 'Account Suspended');
+      setText('blocked-text', student.status_reason || (dict.suspended_text || 'Your account has been suspended by the School Administration.'));
+      const blocked = document.getElementById('blocked-overlay');
+      if(blocked) blocked.classList.remove('hidden');
     } else if(student.status === 'removed'){
-      document.getElementById('blocked-icon').textContent = '🚫';
-      document.getElementById('blocked-title').textContent = dict.removed_title || 'Removed from School';
-      document.getElementById('blocked-text').textContent = student.status_reason || (dict.removed_text || 'You have been removed from Hoshyara Zdakra School.');
-      document.getElementById('blocked-overlay').classList.remove('hidden');
+      setText('blocked-icon', '🚫');
+      setText('blocked-title', dict.removed_title || 'Removed from School');
+      setText('blocked-text', student.status_reason || (dict.removed_text || 'You have been removed from Hoshyara Zdakra School.'));
+      const blocked = document.getElementById('blocked-overlay');
+      if(blocked) blocked.classList.remove('hidden');
     }
   }
 
@@ -1397,13 +1412,13 @@
         body: JSON.stringify({ history: aiTurns })
       });
       const data = await res.json();
-      if(!data.reply) throw new Error('no reply');
+      if(!data.reply) throw new Error(data.detail || data.error || 'no reply');
       thinking.classList.remove('thinking');
       thinking.textContent = data.reply;
       aiTurns.push({ role: 'assistant', text: data.reply });
     }catch(e){
       thinking.classList.remove('thinking');
-      thinking.textContent = 'اړیکه له سرور سره ونشوه — بیا هڅه وکړئ.';
+      thinking.textContent = 'Error: ' + (e && e.message ? e.message : 'connection failed');
     }
     input.disabled = false;
     if(sendBtn) sendBtn.disabled = false;
