@@ -1374,9 +1374,6 @@
         }catch(e){}
       });
   }
-  renderNotes();
-  checkRegistration();
-  updateBadges();
 
   // Real AI chat via our own server (Gemini)
   let aiTurns = []; // {role: 'user'|'assistant', text: '...'}
@@ -1792,6 +1789,7 @@
     const savedLang = localStorage.getItem('hz_lang');
     setLang(savedLang && i18n[savedLang] ? savedLang : 'en');
   }catch(e){}
+  checkRegistration();
 </script>
 
 </body>
